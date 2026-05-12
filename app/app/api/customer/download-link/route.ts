@@ -26,6 +26,10 @@ interface Body {
   order_id?: string;
 }
 
+interface StorageFile {
+  name: string;
+}
+
 export async function POST(req: Request) {
   const auth = requireCustomerApi();
   if (!auth.ok) return NextResponse.json(auth.body, { status: auth.status });
@@ -69,7 +73,7 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-  const zip = (list ?? []).find((f) => f.name.endsWith('.zip'));
+  const zip = ((list ?? []) as StorageFile[]).find((f) => f.name.endsWith('.zip'));
   if (!zip) {
     return NextResponse.json({ error: 'no_pack_zip_in_storage' }, { status: 404 });
   }
