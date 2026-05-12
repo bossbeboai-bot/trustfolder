@@ -383,7 +383,7 @@ export async function listFailures(options?: { limit?: number }): Promise<AdminF
 
   push((pipelineFailures.data ?? []) as AdminOrderRow[], 'pipeline');
   push(
-    (paymentFailures.data ?? []).map((r): AdminOrderRow => r as AdminOrderRow),
+    (paymentFailures.data ?? []).map((r: unknown): AdminOrderRow => r as AdminOrderRow),
     'payment',
   );
 
