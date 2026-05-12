@@ -1,0 +1,454 @@
+TrustFolder — progress log
+==========================
+
+Phase 3.9 — Launch-ready v1 (Fast Finish Sprint)
+------------------------------------------------
+Status: complete. Ready for first outreach.
+
+What shipped
+- Dark editorial palette flip across `globals.css` + all shared primitives
+  (`SiteChrome`, `MarketingPrimitives`, `PricingPackCard`, `ContactForm`,
+  `MarketingHome`, `RequestLeadPage`, `AssessmentPage`).
+- Encoding repair: reversed accidental UTF-8 double-encoding on 11 files.
+  Zero residual mojibake.
+- Admin chrome + login + table + row actions patched off light-theme
+  classes so the founder workspace reads correctly in dark mode.
+- `--tf-on-light` token added for text on light CTA pills.
+
+What was tested (all passing)
+- `npx tsc --noEmit` — pass
+- `npm run build` — pass, 31 routes
+- 24 Playwright screenshots (8 pages  3 viewports) — premium, no
+  overflow, large hero typography
+- Flow A: home  run free check  assessment step 1 (3/3)
+- Flow B: `/request?type=governance` submit  success state (2/2)
+- Flow C: admin login  list  PATCH status  persistence (8/8)
+- Flow D: 5 secondary pages render + CTAs reachable (10/10)
+- Forbidden-phrase audit: 0 hits
+
+What works for a real prospect
+- Visit the website on desktop or mobile and understand the product
+- Run a free eligibility check at `/assessment`
+- Request a paid pack at `/request?type=governance` (or any other type)
+- Submission lands in the `requests` table
+- Founder signs in at `/admin/login`, sees the row at `/admin/requests`,
+  and can update status (new / contacted / qualified / converted /
+  closed_lost) + add an internal note
+
+What is deferred (out of v1 scope)
+- Customer dashboard, customer login, connectors, subscriptions
+- New payment provider, instant checkout
+- Real Remotion MP4/GIF renders
+- Licensed display serif font
+- `/checkout/cancel` and `/checkout/return` deeper polish
+- `MarketingHome` local helper de-duplication
+
+Reproduction commands
+- `cd app && npm run dev`            — start dev server on :3000
+- `cd app && npm run build`          — full production build
+- `cd app && npx tsc --noEmit`       — type check
+- `node scripts/qa-scale-audit.mjs`  — capture 24 screenshots
+- `node scripts/qa-flow-test.mjs`    — public flow tests A/B/D
+- `node scripts/qa-admin-flow.mjs`   — admin flow C
+
+Acceptance criteria
+1.  Website looks premium enough for first outreach — yes
+2.  All core pages render                            — yes
+3.  No tiny / compressed UI                          — yes (verified at 3 viewports)
+4.  Mobile works                                     — yes (390 viewport)
+5.  `/assessment` works                              — yes (Flow A)
+6.  `/request` saves leads                           — yes (Flow B + Flow C row visible)
+7.  Admin can see and update request                 — yes (Flow C 8/8)
+8.  No buy-now language                              — yes (0 forbidden hits)
+9.  No legal overclaims                              — yes (disclaimer present, scope notes on every page)
+10. Typecheck passes                                 — yes
+11. Build passes                                     — yes (31 routes)
+12. Screenshots reviewed                             — yes (24 captured + read inline)
+13. No scope creep into dashboards / connectors /
+    subscriptions / payments                         — yes (none touched)
+
+Next step
+- Phase 4 buyer validation. First outreach. Watch `/admin/requests`.
+  See `docs/25-phase-4-buyer-validation-plan.md`.
+
+Files of interest
+- `docs/32-premium-visual-rebuild.md` § 11  (this sprint, long form)
+- `app/app/globals.css`                     (palette tokens)
+- `app/app/components/MarketingPrimitives.tsx`
+- `app/app/components/SiteChrome.tsx`
+- `scripts/qa-*.mjs`                        (all QA scripts)
+
+Phase 5 / Batch 1 - Customer login + dashboard
+----------------------------------------------
+Status: code-complete, runtime-pending one DB migration apply by founder.
+
+What shipped
+- engine/supabase/migrations/0004_customer_auth.sql (additive: 3 new tables
+  + nullable customer_id on requests, orders, assessments).
+- app/lib/customer-auth.ts (HMAC tf_customer cookie, magic-link token utils).
+- app/lib/customer-data.ts (known-email gate, profile mgmt, scoped reads,
+  audit logging).
+- engine/src/customer-mail.ts (sendCustomerMagicLink via Resend).
+- /api/customer/* (login-link, verify, logout, me, summary, requests,
+  orders, packs, download-link) - 9 routes, all auth-gated where appropriate.
+- /login + /dashboard/{overview,requests,orders,packs,downloads,settings}.
+- Dark editorial palette consistent with the public site.
+- Strict known-emails-only policy. Generic 200 response for all login-link
+  attempts so email enumeration is impossible. Single-use 15-min tokens.
+
+Verified
+- typecheck pass, build pass (16 new routes, 47 total)
+- qa-flow-test.mjs 15/15 (v1 regression intact)
+- qa-admin-flow.mjs 8/8 (v1 regression intact)
+- qa-customer-flow.mjs Phase 1 7/7 (page renders, auth gate, generic
+  responses, 401 without cookie, idempotent logout, invalid-token redirect)
+- forbidden-phrase grep 0 hits, disclaimer present on dashboard
+
+Pending one founder step
+- Apply migration 0004 via Supabase Studio SQL editor (paste + Run).
+- Re-run qa-customer-flow.mjs to execute Phase 2 (magic-link end-to-end).
+- (Optional) run qa-batch1-screenshots.mjs to capture all six dashboard tabs.
+
+Cookie strategy locked: HMAC mirror of admin-auth.ts. NOT Supabase Auth.
+Service-role-only DB model preserved. No anon key on browser. No RLS
+policies needed.
+
+Next: Batch 2 - PayPal checkout for supported paid packs. Do not start
+subscriptions or any new payment provider.
+
+Phase 5 / Batch 2 - PayPal checkout reliability
+-----------------------------------------------
+Status: Code-complete and partially verified. Full sandbox buyer
+approval/capture skipped by user decision.
+
+PayPal is the selected main payment provider. Supported checkout tiers are
+tier_2 and tier_3. Tier_1, Enterprise, and Agency remain request/manual
+only. Create-order and routing are verified. Full sandbox buyer
+approval/capture was skipped, so live payment launch still requires one
+manual sandbox approval/capture test before accepting real payments.
+
+Provider decision
+- PayPal primary.
+- No Paddle, Stripe, Lemon Squeezy, or new provider in Batch 2.
+- No subscriptions in Batch 2. Subscription UI stays hidden until Batch 3.
+- USD remains the checkout currency for international buyers.
+
+Tier rules
+- AI Website Trust Snapshot ($99): request-only until snapshot generation is
+  implemented.
+- AI Disclosure Pack ($499): secure PayPal checkout after the free fit check.
+- Buyer-Ready AI Governance Folder ($999): secure PayPal checkout after the
+  free fit check.
+- Enterprise Buyer Handoff ($2,500+): application/manual invoice only.
+- Agency Pack: request/manual invoice only.
+
+What changed
+- `/assessment` now starts secure PayPal checkout for supported paid tiers
+  after fit is confirmed and keeps snapshot request-only.
+- `/pricing` now routes tier_2 and tier_3 through the free check before secure
+  checkout; unsupported tiers remain request-only.
+- PayPal capture, checkout return, and webhook paths only start generation
+  after acquiring the `payment_pending -> payment_completed` transition.
+- `order-status.transition()` now uses an optimistic update predicate when
+  `expected_from` is provided, preventing duplicate transition acquisition.
+- `runPipeline()` no-ops on replay if the order is already preparing, packaged,
+  delivered, failed, or refunded.
+- Dashboard/status copy now uses customer-facing PayPal language such as
+  "Payment confirmed", "Preparing your evidence folder", and "Your pack is
+  ready".
+- Added `docs/36-paypal-main-provider.md`.
+
+Verification run this batch (non-manual only)
+- npm run build: PASS
+- node scripts/qa-flow-test.mjs: 15/15 PASS
+- node scripts/qa-admin-flow.mjs: 8/8 PASS
+- node scripts/qa-customer-flow.mjs: 16/16 PASS
+- scripts/check-paypal-env.ps1: PAYPAL_ENV_RESULT = GO
+- node scripts/smoke-bb2b3-prepare.mjs: tier_2 create-order PASS,
+  tier_3 create-order PASS, tier_1 expected-pending
+- Unsupported-tier guard: tier_1 -> 400 tier_1_checkout_disabled, other
+  tiers -> 400 unsupported_tier (verified by code inspection of
+  app/app/api/paypal/create-order/route.ts)
+- Capture/webhook idempotency: verified by code inspection of
+  app/app/api/paypal/capture/route.ts, app/app/api/paypal/webhook/route.ts,
+  engine/src/order-status.ts, engine/src/pipeline.ts
+- Refund/reversal handling: verified by code inspection of
+  app/app/api/paypal/webhook/route.ts and
+  app/app/dashboard/orders/page.tsx
+- Dashboard status copy: verified by code inspection of
+  engine/src/order-status.ts, app/app/dashboard/primitives.tsx,
+  app/app/success/[orderId]/page.tsx, app/app/checkout/cancel/page.tsx
+- Forbidden phrase grep across app/app, app/lib, engine/src, Batch 2 docs:
+  0 hits
+
+Sandbox checks deliberately skipped this batch (still owed before live)
+- Sandbox buyer approval + capture round-trip.
+- Webhook replay/idempotency against a live capture event.
+- Failed/denied capture in sandbox.
+- Refund/reversal event replay.
+- Dashboard status after a real confirmed payment.
+
+Public clarity + SEO foundation sprint
+--------------------------------------
+Status: complete. Customer dashboard Batch 1 remains planned; public
+clarity, SEO metadata, sitemap/robots, and static blog infrastructure are
+now shipped first.
+
+What shipped
+- Homepage hero rewritten around the 10-second clarity test: what
+  TrustFolder does, what documents it prepares, what readiness areas it
+  supports, what it does not guarantee, and the next step.
+- Shared clarity blocks added in `app/app/components/ClarityBlocks.tsx`:
+  document-prep cards, output bullets, readiness areas, FAQ JSON-LD, and
+  reusable "What you get" block.
+- "What you get" reused on homepage, `/pricing`, and `/request`.
+- Public routes converted or kept as SEO-friendly server components with
+  per-page metadata via `app/lib/seo.ts`.
+- `app/app/sitemap.ts` and `app/app/robots.ts` added.
+- Static blog added with `/blog` and `/blog/[slug]`, backed by
+  `app/lib/blog.ts` and `app/lib/blog-posts.ts`.
+- 10 starter blog posts added, written in plain-English readiness language
+  without legal guarantees or certification claims.
+- SEO strategy documented in `docs/35-seo-content-strategy.md`.
+
+Verified
+- `npx tsc --noEmit` — pass
+- `npm run build` — pass, including `/blog`, 10 static blog post paths,
+  `/robots.txt`, and `/sitemap.xml`
+- Public route smoke check — 12/12 pass
+- `node scripts/qa-flow-test.mjs` — 15/15 pass
+- `node scripts/qa-admin-flow.mjs` — 8/8 pass
+- Forbidden-phrase grep across public app/lib source and SEO doc — 0 hits
+
+Compliance module roadmap + public scope copy
+---------------------------------------------
+Status: complete. Verified.
+
+What changed
+- Shared clarity copy now states the current supported scope: AI disclosure
+  drafts, AI system / AI use summaries, governance summaries, evidence
+  trackers, source notes, buyer/legal handoff notes, 30-day readiness
+  roadmaps, ISO 42001-inspired checklist support, and EU AI Act
+  transparency-readiness notes.
+- Homepage, `/pricing`, `/safety`, `/request`, and `/examples` now include
+  current-scope, planned-module, and expert-review-only messaging.
+- Planned compliance-readiness modules are presented as roadmap-only items,
+  not current products or checkout options.
+- Expert-review-only areas are explicitly routed away from standard automated
+  packs.
+- Added `docs/37-compliance-module-roadmap.md` with current modules, planned
+  modules, expert-review areas, launch checklist, QA requirements, review
+  needs, automation/manual status, and copy rules.
+
+Safety boundary
+- No new templates, generation flows, checkout options, or purchasable
+  compliance modules were added for roadmap or expert-review-only areas.
+
+Verified
+- `npx tsc --noEmit` — pass
+- `npm run build` — pass, 42 routes
+- Targeted forbidden overclaim scan across edited public files and
+  `docs/37-compliance-module-roadmap.md` — 0 hits
+
+Phase 6 — Compliance-readiness module expansion
+------------------------------------------------
+Status: code/docs/templates updated. Verified.
+
+What changed
+- Added a public compliance-readiness module architecture across homepage,
+  `/pricing`, `/safety`, `/request`, and `/examples`.
+- Added request-only package interests for SOC 2 readiness, security
+  questionnaire support, GDPR AI/data readiness, DPA/privacy handoff,
+  ISO 42001 readiness, HIPAA/healthcare intake, medical AI intake,
+  employment/hiring AI intake, financial/credit/insurance AI intake,
+  children’s product intake, biometrics intake, and law
+  enforcement/critical infrastructure intake.
+- Kept all Phase 6 modules request-only or expert-review intake-only. No
+  checkout, payment routing, generated final compliance pack, or new database
+  table was added.
+- Added illustrative Phase 6 examples on `/examples`, each labelled as a
+  fictional sample.
+- Added `templates/modules/` with module folders, required README/intake/
+  outputs/QA/disclaimer files, and P1 starter templates.
+- Added `docs/38-compliance-module-expansion.md`.
+- Updated `docs/35-seo-content-strategy.md` and
+  `docs/37-compliance-module-roadmap.md`.
+- Updated engine QA rules so high-risk template IDs fail on final-conclusion
+  language or missing expert-review/intake disclaimers.
+
+Safety boundary
+- TrustFolder prepares compliance-readiness documents, evidence packs,
+  intake summaries, questionnaire support, buyer/legal handoff, and
+  expert-review handoff material.
+- Not legal advice. Not certification. Not a compliance guarantee.
+
+Verified
+- `npx tsc --noEmit` (app) — pass
+- `npm run typecheck` (engine) — pass
+- `npm run build` (app) — pass, 42 routes
+- `npm run build` (engine) — pass
+- Targeted forbidden-phrase scan across edited public/docs/templates and
+  `engine/src/qa.ts` — 0 hits for fully compliant, guaranteed compliance,
+  SOC 2 certified, GDPR compliant, HIPAA compliant, EU AI Act compliant,
+  ISO 42001 certified, audit-proof, legal guarantee, no lawyer needed,
+  100% autonomous compliance, skip legal review, complete compliance
+  solution, buy now, safe to deploy, legal conclusion, no further review
+  needed.
+- Phase 6 public route smoke (scripts/smoke-phase6-public-routes.mjs) —
+  PASS for `/`, `/pricing`, `/request?type=soc2-readiness`, `/safety`,
+  `/examples` against a clean local build.
+- Phase 6 request package-interest smoke
+  (scripts/smoke-request-package-interest.mjs) — PASS for all 12 new
+  module types (selector value matches and module label visible).
+
+Notes
+- No checkout was added for any new module.
+- No DB migration was needed; `package_interest` is a free-text column
+  validated only at the API surface, so the new module slugs flow
+  through `/api/request`, and `admin-data` reporting was extended to
+  count them.
+- High-risk modules (HIPAA/healthcare, medical AI, hiring AI, finance/
+  credit/insurance, children's products, biometrics, law enforcement,
+  critical infrastructure) are intake-only; engine QA now auto-fails
+  high-risk template IDs that include final-conclusion language or omit
+  the required expert-review/intake disclaimers.
+
+Phase 7 — Production Launch Hardening
+-------------------------------------
+Status: B — production-code-ready, manual live checks pending.
+
+What changed
+- Created production hardening docs: 39 (master), 40 (Vercel), 41 (env
+  vars), 42 (Supabase), 43 (PayPal), 44 (Resend), 45 (admin SOP), 46
+  (monitoring), 47 (go/no-go).
+- Added /api/health route returning `{ ok, checks: { app, supabase,
+  storage } }`. Returns 200 only when every check is true. Never returns
+  secrets.
+- Added legal/safety pages: /terms, /privacy, /refund, /legal. Added
+  Terms / Privacy / Refund / Legal links to the footer in SiteChrome.
+  Included the four pages in lib/seo.ts PUBLIC_ROUTES so they are part of
+  the sitemap.
+- Extended app/.env.example and engine/.env.example with Phase 7 vars
+  (CUSTOMER_SESSION_SECRET, ADMIN_EMAIL, SUPPORT_EMAIL, ALERT_WEBHOOK_URL,
+  NODE_ENV).
+- Added scripts:
+  - scripts/probe-production-supabase.mjs (verifies migrations 0001-0004
+    tables, customer auth tables, deliveries bucket present + private)
+  - scripts/test-email-production.mjs (single safe Resend probe, never
+    prints secrets, refuses customer-facing inboxes)
+  - scripts/qa-production-e2e-dry-run.mjs (automated gates: health,
+    public routes, auth gates, tier guards; manual gates are listed
+    explicitly as NOT_RUN_MANUAL_REQUIRED)
+  - scripts/qa-production-readiness.mjs (combined readiness aggregator:
+    public routes + auth gates + /api/health + tier guards + engine env
+    presence + scoped forbidden-phrase scan; manual gates listed)
+
+Not built (per Phase 7 rules)
+- No subscriptions, connectors, team accounts, enterprise SSO, second
+  payment provider, new compliance modules, complex analytics, full CMS,
+  marketplace, or public API.
+
+Verified (automated, local)
+- `npx tsc --noEmit` (app) — pass.
+- `npm run build` (app) — pass; 46 routes (added /api/health, /terms,
+  /privacy, /refund, /legal).
+- `npm run build` / `npm run typecheck` (engine) — pass.
+- `node scripts/qa-production-e2e-dry-run.mjs` against local production
+  build — 20 PASS, 0 FAIL, 6 NOT_RUN_MANUAL_REQUIRED.
+- `node scripts/qa-production-readiness.mjs` against local production
+  build — 38 PASS, 0 FAIL, 6 NOT_RUN_MANUAL_REQUIRED.
+  - Forbidden-phrase scan (public surface + module starters) clean.
+  - Tier_1 checkout disabled, unsupported tier rejected.
+  - /api/health returns 200 with `{ ok: true, checks: { app, supabase,
+    storage } }` against the existing engine/.env Supabase project.
+  - All required engine/.env keys present.
+
+Manual gates outstanding (NO-GO until cleared)
+- PayPal sandbox approval/capture for tier_2 and tier_3 (full round-trip,
+  including generation + delivery + dashboard download).
+- Optional small-amount live PayPal capture once region/currency is
+  confirmed.
+- Real Resend email round-trip to a real inbox (use
+  scripts/test-email-production.mjs).
+- Customer magic link round-trip on production.
+- Admin login on production.
+- /api/health configured on UptimeRobot / Better Stack.
+- Production Supabase project probed with
+  scripts/probe-production-supabase.mjs (PROBE_RESULT: GO).
+
+Safety boundary
+- TrustFolder still prepares compliance-readiness documents only. Not
+  legal advice. Not certification. Not a compliance guarantee.
+- /terms, /privacy, /refund, /legal are starter documents that explicitly
+  ask for counsel review before scale; they do not introduce
+  overclaiming language.
+
+Phase 8 — Competitor-Inspired Product Depth Build
+--------------------------------------------------
+Status: code/docs complete. Automated verification GREEN.
+
+What shipped
+- Readiness Score (Batch 1): `engine/src/readiness-score.ts` with five
+  dimensions; displayed on /assessment review screen, customer dashboard
+  pack cards, and inside every generated pack README + manifest.json.
+- Source-to-Document Traceability (Batch 2): manifest.json now carries
+  per-document `sources` (website pages, user-confirmed answers,
+  system-inferred signals, confidence band, needs_human_review).
+- Open Review Items (Batch 3): `engine/src/open-review-items.ts` builds
+  static items from intake/scope; ships as `open-review-items.md` in the
+  ZIP, embedded in README and next-steps-roadmap, plus machine-readable
+  in manifest.json.
+- PDF/DOCX (Batch 4): deferred per Phase 8 plan to printable HTML.
+  `buyer-review-packet.html` ships inside every ZIP; customers Print →
+  Save as PDF. Documented as the v1 export path.
+- Buyer Review Packet (Batch 5): `engine/src/buyer-review-packet.ts`
+  produces both Markdown and printable HTML versions. Inside the ZIP
+  only — no hosted public trust center.
+- Dashboard Pack Preview + Status Timeline (Batch 6):
+  `app/app/dashboard/StatusTimeline.tsx` + `buildOrderTimeline` +
+  `getReadinessScoreForOrder`. Orders page shows timeline per order;
+  packs page shows the recomputed readiness score per order and a
+  Buyer Review Packet hint.
+- Framework SEO Landing Pages (Batch 7): 8 new public pages built on a
+  shared `FrameworkLanding` component:
+  /eu-ai-act-transparency-readiness, /ai-disclosure-template,
+  /ai-governance-documents, /soc2-readiness-evidence-pack,
+  /gdpr-ai-data-readiness, /security-questionnaire-support,
+  /iso-42001-readiness, /ai-agency-client-handoff. All 8 added to
+  PUBLIC_ROUTES in lib/seo.ts and confirmed present in /sitemap.xml.
+- Admin Reissue (Batch 8): POST /api/admin/orders/[id]/reissue-download
+  generates a fresh 24h signed URL and persists it; admin-auth gated
+  (401 when unauthenticated). No retry button yet; manual rescue path
+  documented in docs/45.
+- Documentation (Batch 9): docs/50-phase-8-product-depth-build.md.
+
+Not built / not claimed (Phase 8 rules)
+- No new payment provider, subscriptions, connectors, team accounts,
+  enterprise SSO, runtime monitoring, bias/drift detection, full
+  compliance automation, or final legal compliance conclusions.
+- No language we forbid: fully compliant, certified, audit-proof,
+  no lawyer needed, legal guarantee, SOC 2 certified, GDPR compliant,
+  HIPAA compliant, ISO certified.
+
+Verified (automated, local)
+- `npx tsc --noEmit` (app) — pass.
+- `npm run build` (app) — pass; 54 routes (8 framework pages + admin
+  reissue route added in Phase 8).
+- `npm run typecheck` / `npm run build` (engine) — pass.
+- `node scripts/qa-production-readiness.mjs` against the local prod
+  build — 38 PASS, 0 FAIL, 6 NOT_RUN_MANUAL_REQUIRED. Forbidden-phrase
+  scan clean (public surface + module starters).
+- 8 framework pages — all return 200 with `<h1>` content.
+- /sitemap.xml — includes all 8 framework slugs.
+- /api/admin/orders/[id]/reissue-download — returns 401 when not
+  authenticated as admin.
+
+Known limitations carried over to a future phase
+- Real .pdf / .docx export deferred to when a stable serverless
+  renderer is chosen. Printable HTML inside the ZIP covers the
+  immediate buyer-facing need.
+- Readiness score on the dashboard is recomputed on each page render
+  from order data (no DB migration). Costs one extra Supabase read per
+  pack card.
+- Admin reissue is API-only; no UI button yet.
+- Buyer Review Packet ships inside the ZIP, not a hosted trust center.

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TrustFolder · Hero prototype · Premium AI Infra × Editorial Evidence</title>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      :root {
+        --tf-bg: #f7f5ef;
+        --tf-bg-soft: #fbfaf7;
+        --tf-surface: #ffffff;
+        --tf-document: #fffefa;
+        --tf-paper: #f3eee2;
+        --tf-ink: #07111f;
+        --tf-ink-soft: #102033;
+        --tf-slate: #5f6d7a;
+        --tf-slate-soft: #8793a0;
+        --tf-border: #e3e0d8;
+        --tf-border-strong: #cfc8bb;
+        --tf-accent: #0f7c8a;
+        --tf-accent-deep: #0a5a64;
+        --tf-accent-soft: #e8f3f4;
+        --tf-accent-blue: #285fd6;
+        --tf-warning-soft: #fff6df;
+        --tf-success-soft: #e7f4eb;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: var(--tf-bg);
+        color: var(--tf-ink);
+        -webkit-font-smoothing: antialiased;
+        font-feature-settings: 'cv11', 'ss01', 'ss02';
+      }
+      .mono { font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-presets="env,react">
+      const { motion } = window.Motion || window.framerMotion;
+
+      function App() {
+        return (
+          <div style={{ minHeight: '100vh', overflow: 'hidden' }}>
+            <Header />
+            <Hero />
+          </div>
+        );
+      }
+
+      function Header() {
+        return (
+          <header style={{
+            position: 'sticky', top: 0, zIndex: 40,
+            background: 'rgba(247, 245, 239, 0.82)',
+            backdropFilter: 'blur(14px)',
+            borderBottom: '1px solid rgba(227, 224, 216, 0.8)',
+          }}>
+            <div style={{
+              maxWidth: 1280, margin: '0 auto',
+              padding: '0 40px',
+              height: 64,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24,
+            }}>
+              <a href="/" style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.035em', color: 'var(--tf-ink)', textDecoration: 'none' }}>TrustFolder</a>
+              <nav style={{ display: 'flex', gap: 28, fontSize: 14, color: 'var(--tf-slate)' }}>
+                {['Product', 'Platform', 'Pricing', 'Examples', 'Agencies', 'Safety', 'Contact'].map((label) => (
+                  <a key={label} href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{label}</a>
+                ))}
+              </nav>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <a href="#" style={{
+                  display: 'inline-flex', alignItems: 'center', height: 40,
+                  padding: '0 16px', borderRadius: 9999,
+                  border: '1px solid var(--tf-border-strong)', background: 'rgba(255,255,255,0.8)',
+                  fontSize: 14, fontWeight: 500, color: 'var(--tf-ink)', textDecoration: 'none',
+                }}>Request paid pack</a>
+                <a href="#" style={{
+                  display: 'inline-flex', alignItems: 'center', height: 40,
+                  padding: '0 16px', borderRadius: 9999,
+                  background: 'var(--tf-ink)', color: '#fff',
+                  fontSize: 14, fontWeight: 500, textDecoration: 'none',
+                }}>Run free check</a>
+              </div>
+            </div>
+          </header>
+        );
+      }
+
+      function Hero() {
+        return (
+          <section style={{
+            position: 'relative',
+            maxWidth: 1280, margin: '0 auto',
+            padding: '88px 40px 128px',
+            display: 'grid',
+            gap: 64,
+            gridTemplateColumns: '1.05fr 0.95fr',
+          }}>
+            {/* soft accent halo */}
+            <div style={{
+              position: 'absolute', left: '50%', top: 0, transform: 'translateX(-50%)',
+              width: 980, height: 600, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(232,243,244,0.85) 0%, rgba(247,245,239,0) 70%)',
+              filter: 'blur(40px)', zIndex: -1,
+            }} />
+
+            <motion.div
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              style={{ alignSelf: 'center' }}
+            >
+              <p className="mono" style={{
+                display: 'inline-flex',
+                fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.22em',
+                color: 'var(--tf-accent)',
+                padding: '8px 14px', borderRadius: 9999,
+                border: '1px solid rgba(15, 124, 138, 0.2)',
+                background: 'var(--tf-accent-soft)',
+              }}>
+                AI governance evidence platform
+              </p>
+              <h1 style={{
+                marginTop: 28,
+                fontSize: 'clamp(56px, 7.4vw, 116px)',
+                fontWeight: 600,
+                lineHeight: 0.94,
+                letterSpacing: '-0.07em',
+                textWrap: 'balance',
+              }}>
+                Turn your AI product website into a buyer-ready evidence folder.
+              </h1>
+              <p style={{
+                marginTop: 32, maxWidth: 580,
+                fontSize: 19, lineHeight: 1.55,
+                color: 'var(--tf-slate)',
+                textWrap: 'pretty',
+              }}>
+                TrustFolder scans your AI product website, confirms what matters,
+                and prepares disclosure, governance, and legal-review handoff
+                drafts for buyer and internal review.
+              </p>
+              <div style={{ marginTop: 40, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <a href="#" style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  height: 52, padding: '0 28px', borderRadius: 9999,
+                  background: 'var(--tf-ink)', color: '#fff',
+                  fontSize: 15, fontWeight: 500, textDecoration: 'none',
+                  boxShadow: '0 18px 60px rgba(7, 17, 31, 0.2)',
+                }}>Run free check</a>
+                <a href="#" style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  height: 52, padding: '0 28px', borderRadius: 9999,
+                  border: '1px solid var(--tf-border-strong)',
+                  background: 'rgba(255,255,255,0.7)',
+                  color: 'var(--tf-ink)',
+                  fontSize: 15, fontWeight: 500, textDecoration: 'none',
+                }}>See example folder</a>
+              </div>
+              <p className="mono" style={{
+                marginTop: 24,
+                fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.18em',
+                color: 'var(--tf-slate-soft)',
+              }}>
+                No payment required · Not legal advice · Built for buyer-readiness
+              </p>
+            </motion.div>
+
+            <HeroVisual />
+          </section>
+        );
+      }
+
+      function HeroVisual() {
+        // Simulated "product running" — three layered cards: URL input → scan rail → evidence folder
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 36, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: 'relative', minHeight: 640 }}
+          >
+            {/* Background paper sheet */}
+            <div style={{
+              position: 'absolute', right: -32, top: 80, width: 360, height: 460,
+              background: 'var(--tf-paper)',
+              borderRadius: 28, transform: 'rotate(4deg)',
+              boxShadow: '0 28px 90px rgba(7, 17, 31, 0.12)',
+              border: '1px solid var(--tf-border-strong)',
+              padding: 28,
+            }}>
+              <p className="mono" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--tf-slate-soft)' }}>Layer · 02</p>
+              <p style={{ marginTop: 16, fontSize: 18, fontWeight: 600, letterSpacing: '-0.04em' }}>Disclosure draft</p>
+              <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ height: 8, width: '80%', borderRadius: 9999, background: '#d8e6e8' }} />
+                <div style={{ height: 8, width: '100%', borderRadius: 9999, background: 'var(--tf-border)' }} />
+                <div style={{ height: 8, width: '65%', borderRadius: 9999, background: 'var(--tf-border)' }} />
+                <div style={{ height: 8, width: '90%', borderRadius: 9999, background: 'var(--tf-border)' }} />
+                <div style={{ height: 8, width: '50%', borderRadius: 9999, background: 'var(--tf-border)' }} />
+              </div>
+            </div>
+
+            {/* Main "product" card */}
+            <div style={{
+              position: 'absolute', left: 0, top: 24,
+              width: '100%', maxWidth: 540,
+              background: 'rgba(255, 255, 255, 0.78)',
+              backdropFilter: 'blur(18px)',
+              border: '1px solid var(--tf-border-strong)',
+              borderRadius: 36,
+              padding: 24,
+              boxShadow: '0 40px 140px rgba(7, 17, 31, 0.16)',
+            }}>
+              <div style={{
+                background: 'var(--tf-document)',
+                border: '1px solid var(--tf-border)',
+                borderRadius: 28,
+                padding: 24,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <p className="mono" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--tf-slate-soft)' }}>TrustFolder pipeline</p>
+                    <p style={{ marginTop: 8, fontSize: 20, fontWeight: 600, letterSpacing: '-0.04em' }}>Evidence preparation</p>
+                  </div>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 9999,
+                    background: 'var(--tf-success-soft)',
+                    color: '#0f6b3a',
+                    fontSize: 12, fontWeight: 500,
+                  }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0f6b3a' }} />
+                    Live
+                  </span>
+                </div>
+                {/* Animated progress */}
+                <div style={{ marginTop: 28, height: 6, background: 'var(--tf-border)', borderRadius: 9999, overflow: 'hidden' }}>
+                  <motion.div
+                    style={{ height: '100%', borderRadius: 9999, background: 'var(--tf-accent)' }}
+                    initial={{ width: '15%' }}
+                    animate={{ width: ['15%', '45%', '75%', '100%', '15%'] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                </div>
+                {/* Pipeline steps */}
+                <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    { label: 'Website URL', value: 'acme.ai', detail: 'Public claims scanned', delay: 0 },
+                    { label: 'AI scan', value: '4 signals', detail: 'Disclosure areas found', delay: 0.3 },
+                    { label: 'Review summary', value: 'Fit likely', detail: 'Founder confirms details', delay: 0.6 },
+                    { label: 'Evidence folder', value: '8 docs', detail: 'Prepared for review', delay: 0.9 },
+                  ].map((row) => (
+                    <motion.div
+                      key={row.label}
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ duration: 4.5, delay: row.delay, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        background: 'var(--tf-surface)',
+                        border: '1px solid var(--tf-border)',
+                        borderRadius: 22,
+                        padding: '14px 18px',
+                        boxShadow: '0 18px 60px rgba(7,17,31,0.06)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+                      }}
+                    >
+                      <div>
+                        <p className="mono" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--tf-slate-soft)' }}>{row.label}</p>
+                        <p style={{ marginTop: 6, fontSize: 18, fontWeight: 600, letterSpacing: '-0.04em' }}>{row.value}</p>
+                      </div>
+                      <p style={{ maxWidth: 150, textAlign: 'right', fontSize: 12, lineHeight: 1.5, color: 'var(--tf-slate)' }}>{row.detail}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Foreground floating "handoff" card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: -3 }}
+              animate={{ opacity: 1, y: 0, rotate: -3 }}
+              transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: 'absolute', left: -40, bottom: 0, width: 230,
+                background: 'var(--tf-ink)', color: '#fff',
+                borderRadius: 26, padding: 22,
+                boxShadow: '0 28px 90px rgba(7, 17, 31, 0.32)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                transform: 'rotate(-3deg)',
+              }}
+            >
+              <p className="mono" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.18em', color: '#a9dce2' }}>Buyer handoff</p>
+              <p style={{ marginTop: 10, fontSize: 16, fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1.3 }}>
+                Lawyer-ready cover sheet
+              </p>
+              <p style={{ marginTop: 12, fontSize: 12, lineHeight: 1.5, color: 'rgba(255,255,255,0.7)' }}>
+                One page summarising scope, disclosures, and the open review questions.
+              </p>
+              <div style={{ marginTop: 16, display: 'flex', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a9dce2' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(169, 220, 226, 0.5)' }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(169, 220, 226, 0.25)' }} />
+              </div>
+            </motion.div>
+          </motion.div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>

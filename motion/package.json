@@ -1,0 +1,29 @@
+{
+  "name": "@trustfolder/motion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion compositions for high-end TrustFolder motion assets. Standalone — never imported by the Next.js app.",
+  "scripts": {
+    "preview": "remotion studio",
+    "render:evidence": "remotion render TrustFolderEvidenceFlow out/evidence-flow.mp4",
+    "render:evidence-gif": "remotion render TrustFolderEvidenceFlow out/evidence-flow.gif --codec=gif",
+    "render:hero-loop": "remotion render TrustFolderHeroLoop out/hero-loop.mp4",
+    "render:scan": "remotion render WebsiteScan out/website-scan.mp4",
+    "render:agency-handoff": "remotion render AgencyHandoff out/agency-handoff.mp4",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.247",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.247"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

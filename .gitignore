@@ -1,0 +1,37 @@
+# Environment / secrets
+.env
+.env.*
+*.env
+app/.env
+app/.env.*
+engine/.env
+engine/.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+coverage/
+.vercel/
+
+# Tooling / local artifacts
+.playwright-mcp/
+.DS_Store
+*.log
+*.pid
+.phase*-server.pid
+
+# Generated deliverables
+*.zip
+*.pdf
+*.docx
+deliveries/
+tmp/
+temp/

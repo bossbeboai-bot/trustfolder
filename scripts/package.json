@@ -1,0 +1,13 @@
+{
+  "name": "@trustfolder/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One-off ops scripts (visual QA, smoke tests). Not part of the Next.js or motion bundles.",
+  "scripts": {
+    "qa": "node qa-screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.59.1"
+  }
+}

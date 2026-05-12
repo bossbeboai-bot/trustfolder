@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TrustFolder design tokens — see docs/DESIGN.md (single source of truth).
+   Phase 3.9: dark editorial premium aesthetic. Near-black base, warm off-white
+   primary text, muted teal accent, thin dark borders.
+   Semantic names preserved; values flipped for dark mode. */
+:root {
+  color-scheme: dark;
+
+  --tf-bg: #0a0b0d;
+  --tf-bg-soft: #0f1114;
+  --tf-surface: #14171c;
+  --tf-document: #181b21;
+  --tf-paper: #1d2128;
+  --tf-ink: #f4f1ea;          /* warm off-white — primary text & light CTA pill */
+  --tf-ink-soft: #d8d4cb;
+  --tf-slate: #9aa0a8;
+  --tf-slate-soft: #6c7079;
+  --tf-border: #1f2127;
+  --tf-border-strong: #2c2f37;
+  --tf-accent: #7fd1c4;        /* muted mint-teal */
+  --tf-accent-deep: #5fb3a7;
+  --tf-accent-soft: #16201f;
+  --tf-accent-blue: #7aa2ff;
+  --tf-warning-soft: #2a230f;
+  --tf-success-soft: #14241a;
+  --tf-on-light: #07111f;      /* near-black text for use on light CTA pills */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--tf-bg);
+  color: var(--tf-ink);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'ss01', 'ss02';
+}
+
+/* Subtle focus rings */
+:focus-visible {
+  outline: 2px solid var(--tf-accent);
+  outline-offset: 2px;
+}
+
+/* Calm, premium spacing for prose */
+.prose-trustfolder {
+  @apply max-w-prose text-[15px] leading-[1.65];
+  color: var(--tf-ink-soft);
+}
+.prose-trustfolder h1 {
+  @apply text-2xl font-semibold mb-3;
+  color: var(--tf-ink);
+}
+.prose-trustfolder h2 {
+  @apply text-xl font-semibold mt-8 mb-2;
+  color: var(--tf-ink);
+}
+.prose-trustfolder p {
+  @apply mb-4;
+}
