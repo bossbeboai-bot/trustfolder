@@ -12,7 +12,7 @@ import { Logo } from './Logo';
 import { GhostCTA, PrimaryCTA } from './Button';
 
 const NAV_LINKS = [
-  ['Product', '/'],
+  ['Overview', '/'],
   ['Pricing', '/pricing'],
   ['Examples', '/examples'],
   ['Agencies', '/agencies'],
@@ -72,7 +72,7 @@ export function Nav() {
           </GhostCTA>
           <PrimaryCTA href="/assessment" size="md">
             Run free check
-            <span aria-hidden>→</span>
+            <span aria-hidden>{'->'}</span>
           </PrimaryCTA>
         </div>
         <button
@@ -106,7 +106,7 @@ export function Nav() {
               See sample pack
             </GhostCTA>
             <PrimaryCTA href="/assessment" size="lg" className="w-full">
-              Run free check →
+              Run free check {'->'}
             </PrimaryCTA>
           </div>
         </div>

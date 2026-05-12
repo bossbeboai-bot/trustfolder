@@ -117,7 +117,7 @@ const SUBHEAD: Record<OptionKey, string> = {
   'dpa-privacy-handoff':
     'An expert-review handoff pack that prepares structured inputs for counsel or a privacy expert. We do not generate final legal agreements.',
   'iso42001-readiness':
-    'A request-only readiness pack for organizing an AI management-system readiness folder aligned with ISO 42001-inspired concepts.',
+    'A request-only readiness pack for organizing an AI management-system readiness folder aligned with ISO/IEC 42001 concepts.',
   'hipaa-healthcare-intake':
     'Expert-review intake only. We collect structured healthcare-data context and route sensitive review to qualified experts.',
   'medical-ai-intake':
@@ -410,7 +410,7 @@ export default function RequestPage() {
       <ReadinessAreas />
 
       <WhatYouGet
-        description="TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal handoff notes, and ISO 42001-inspired readiness checklists."
+        description="TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal handoff notes, and ISO/IEC 42001-aligned readiness checklists."
       />
 
       {/* ----------------------------------------------------------------- */}

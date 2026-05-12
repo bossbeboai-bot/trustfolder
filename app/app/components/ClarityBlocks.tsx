@@ -49,7 +49,7 @@ const PREPARES = [
     body: 'A practical list of what to fix, review, disclose, or prepare next.',
   },
   {
-    title: 'ISO 42001-inspired checklist support',
+    title: 'ISO/IEC 42001-aligned checklist support',
     body: 'A readiness checklist that helps your team organise AI governance evidence before expert review.',
   },
   {
@@ -124,7 +124,7 @@ const WHAT_YOU_GET = [
   'Source notes',
   'Buyer / legal handoff',
   '30-day readiness roadmap',
-  'ISO 42001-inspired checklist support',
+  'ISO/IEC 42001-aligned checklist support',
   'EU AI Act transparency-readiness notes',
 ] as const;
 
@@ -198,7 +198,7 @@ export const HERO_OUTPUT_BULLETS: ReadonlyArray<string> = [
   'Source notes',
   'Buyer / legal handoff',
   '30-day readiness roadmap',
-  'ISO 42001-inspired checklist support',
+  'ISO/IEC 42001-aligned checklist support',
   'EU AI Act transparency-readiness notes',
 ];
 
@@ -225,7 +225,7 @@ const READINESS_AREAS = [
   'AI governance documentation',
   'AI vendor / buyer review preparation',
   'AI evidence folder preparation',
-  'ISO 42001-inspired checklist support',
+  'ISO/IEC 42001-aligned checklist support',
   'Legal-review handoff preparation',
 ] as const;
 
@@ -302,7 +302,7 @@ export function ReadinessAreas() {
       <p className="mt-5 max-w-3xl text-[16px] leading-[1.65] text-[var(--tf-slate)]">
         TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including
         AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal
-        handoff notes, and ISO 42001-inspired readiness checklists.
+        handoff notes, and ISO/IEC 42001-aligned readiness checklists.
       </p>
       <p className="mt-4 max-w-3xl text-[14px] leading-[1.7] text-[var(--tf-slate-soft)]">
         TrustFolder supports AI governance and transparency-readiness preparation. It is not legal
@@ -476,7 +476,7 @@ export function ComplianceModulesBlock({
 const FAQ: ReadonlyArray<{ q: string; a: string }> = [
   {
     q: 'What documents does TrustFolder prepare?',
-    a: 'TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal handoff notes, and ISO 42001-inspired readiness checklists.',
+    a: 'TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal handoff notes, and ISO/IEC 42001-aligned readiness checklists.',
   },
   {
     q: 'Is TrustFolder legal advice?',

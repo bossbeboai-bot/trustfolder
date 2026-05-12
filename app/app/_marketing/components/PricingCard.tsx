@@ -38,10 +38,10 @@ export function PricingCard({
 }: PricingCardProps) {
   return (
     <article
-      className={`relative flex flex-col gap-5 rounded-xl bg-[color:var(--m-white)] p-6 transition-all duration-200 ease-editorial hover:-translate-y-0.5 ${
+      className={`relative flex flex-col gap-5 rounded-xl p-6 transition-all duration-200 ease-editorial hover:-translate-y-0.5 ${
         popular
-          ? 'border-2 border-[color:var(--m-green)] shadow-[0_1px_0_rgba(14,15,13,0.04),0_8px_24px_-12px_rgba(26,107,74,0.25)]'
-          : 'border border-[color:var(--m-border)] hover:border-[color:var(--m-border-mid)]'
+          ? 'border-2 border-[color:var(--m-green)] bg-[color:var(--m-green-light)] shadow-[0_1px_0_rgba(14,15,13,0.04),0_8px_24px_-12px_rgba(26,107,74,0.25)]'
+          : 'border border-[color:var(--m-border)] bg-[color:var(--m-white)] hover:border-[color:var(--m-border-mid)]'
       }`}
     >
       {popular ? (

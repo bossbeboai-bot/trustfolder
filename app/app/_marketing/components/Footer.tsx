@@ -13,11 +13,10 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-[32ch] text-[13px] leading-relaxed text-[color:var(--m-subtle)]">
-            TrustFolder prepares review-ready AI governance drafts. Your lawyer
-            takes it from there — faster, and from a better starting point.
+            TrustFolder assembles AI governance drafts your lawyer can start from.
             <br />
             <span className="mt-2 inline-block font-mono text-[11px] tracking-wideish text-[color:var(--m-subtle)]">
-              Not legal advice · Not certification · Not a compliance guarantee
+              Not legal advice - Not certification - Not a compliance guarantee
             </span>
           </p>
         </div>
@@ -34,7 +33,6 @@ export function Footer() {
           <FooterLink href="/blog">Blog</FooterLink>
           <FooterLink href="/contact">Contact</FooterLink>
           <FooterLink href="/assessment">Run free check</FooterLink>
-          <FooterLink href="/request?type=disclosure">Request paid pack</FooterLink>
         </nav>
       </div>
       <div className="border-t border-[color:var(--m-border)]">

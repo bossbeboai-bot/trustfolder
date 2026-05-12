@@ -4,9 +4,9 @@ import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Examples — TrustFolder',
+  title: 'Sample AI Governance Documents and Disclosure Drafts',
   description:
-    'Illustrative samples of how TrustFolder packs are structured for B2B AI SaaS, an AI agency, and an AI productivity tool. None of these are real customers.',
+    'Sample AI governance documents, AI disclosure drafts, evidence trackers, and buyer handoff previews for TrustFolder packs.',
   path: '/examples',
 });
 

@@ -12,22 +12,19 @@ const SAMPLE_DOCUMENTS = [
     docNumber: '01',
     title: 'AI Disclosure Draft',
     description: 'User-facing disclosure language for chatbots, assistants, and AI-generated content.',
-    preview:
-      'This assistant is an AI system. It generates replies based on your message and may be incorrect. A human reviews escalations before any account or billing change is made...',
+    type: 'disclosure',
   },
   {
     docNumber: '02',
     title: 'Evidence Tracker',
     description: 'Structured table linking every claim to source material and verification status.',
-    preview:
-      'Claim | Source | Status | Notes\nModel family documented | Product page | Verified\nHuman oversight process | Internal policy | Verified\nData retention period | Privacy policy | Needs review...',
+    type: 'tracker',
   },
   {
     docNumber: '03',
     title: 'Buyer Handoff Cover Sheet',
     description: 'Executive summary for procurement reviewers and legal teams.',
-    preview:
-      'TrustFolder Governance Pack - [Product Name]\nPrepared: [Date] | Scope: AI disclosure and governance readiness\nThis folder contains review-ready drafts aligned with EU AI Act...',
+    type: 'handoff',
   },
 ];
 
@@ -62,6 +59,17 @@ export function ExamplesPage() {
             </p>
           </div>
           <DocumentPreviewPlayer />
+          <div className="mt-7 flex flex-col items-start gap-3 rounded-xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-[48ch] text-[14px] leading-relaxed text-[color:var(--m-muted)]">
+              Want this mapped to your own AI product website?
+            </p>
+            <a
+              href="/assessment"
+              className="inline-flex h-11 items-center justify-center rounded-lg bg-[color:var(--m-green)] px-5 text-[14px] font-medium text-[color:var(--m-white)] transition-colors hover:bg-[color:var(--m-green-dark)]"
+            >
+              Get this for your product
+            </a>
+          </div>
         </div>
       </Reveal>
 
@@ -101,9 +109,7 @@ export function ExamplesPage() {
               <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--m-muted)]">
                 {doc.description}
               </p>
-              <pre className="mt-3 max-w-full whitespace-pre-wrap break-words rounded bg-[color:var(--m-cream)] p-3 font-mono text-[10px] leading-relaxed text-[color:var(--m-black)]">
-                {doc.preview}
-              </pre>
+              <SampleDocumentMock type={doc.type} />
               <p className="mt-3 font-mono text-[10px] text-[color:var(--m-subtle)]">
                 Sample - not a real customer pack
               </p>
@@ -136,6 +142,70 @@ export function ExamplesPage() {
           </div>
         </div>
       </Reveal>
+    </div>
+  );
+}
+
+function SampleDocumentMock({ type }: { type: string }) {
+  if (type === 'tracker') {
+    return (
+      <div className="mt-4 rounded-md border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-4">
+        <div className="grid grid-cols-[1.1fr_0.8fr_0.7fr] gap-2 border-b border-[color:var(--m-border)] pb-2 font-mono text-[9px] uppercase tracking-wideish text-[color:var(--m-subtle)]">
+          <span>Claim</span>
+          <span>Source</span>
+          <span>Status</span>
+        </div>
+        {[
+          ['AI support assistant', 'Product page', 'Verified'],
+          ['Human escalation path', 'Help center', 'Review'],
+          ['Retention language', 'Privacy page', 'Open'],
+        ].map(([claim, source, status]) => (
+          <div key={claim} className="grid grid-cols-[1.1fr_0.8fr_0.7fr] gap-2 border-b border-[color:var(--m-border)] py-2 text-[10px] leading-5 text-[color:var(--m-muted)] last:border-b-0">
+            <span className="text-[color:var(--m-black)]">{claim}</span>
+            <span>{source}</span>
+            <span>{status}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (type === 'handoff') {
+    return (
+      <div className="mt-4 rounded-md border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-4">
+        <p className="font-serif text-[16px] font-semibold text-[color:var(--m-black)]">
+          Buyer Handoff - ACME.ai
+        </p>
+        <div className="mt-3 grid gap-2 text-[11px] leading-5 text-[color:var(--m-muted)]">
+          <p><span className="font-medium text-[color:var(--m-black)]">Scope:</span> AI support assistant and generated response drafts.</p>
+          <p><span className="font-medium text-[color:var(--m-black)]">Included:</span> disclosure draft, source notes, governance summary.</p>
+          <p><span className="font-medium text-[color:var(--m-black)]">Next review:</span> counsel review of disclosure placement.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-md border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-4">
+      <div className="flex items-start justify-between gap-3 border-b border-[color:var(--m-border)] pb-3">
+        <div>
+          <p className="font-serif text-[16px] font-semibold text-[color:var(--m-black)]">
+            AI Disclosure Draft
+          </p>
+          <p className="mt-1 font-mono text-[9px] uppercase tracking-wideish text-[color:var(--m-subtle)]">
+            Prepared for review
+          </p>
+        </div>
+        <span className="rounded-sm bg-[color:var(--m-green-light)] px-2 py-1 font-mono text-[9px] uppercase text-[color:var(--m-green-dark)]">
+          Draft
+        </span>
+      </div>
+      <p className="mt-3 text-[11px] leading-6 text-[color:var(--m-muted)]">
+        ACME.ai uses AI to draft support responses. Users should be told when AI assists a reply and when a human reviewer is involved.
+      </p>
+      <p className="mt-3 border-t border-[color:var(--m-border)] pt-3 font-mono text-[9px] text-[color:var(--m-subtle)]">
+        Source: acme.ai/product - scanned 12 May 2026
+      </p>
     </div>
   );
 }

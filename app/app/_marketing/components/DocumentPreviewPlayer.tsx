@@ -21,6 +21,7 @@ export function DocumentPreviewPlayer() {
           fps={DOCUMENT_PREVIEW_FPS}
           controls
           acknowledgeRemotionLicense
+          numberOfSharedAudioTags={0}
           clickToPlay
           loop
           allowFullscreen

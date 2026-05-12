@@ -18,14 +18,11 @@ const PACKS = [
       { label: 'AI product eligibility scan', included: true },
       { label: 'Scope assessment report', included: true },
       { label: 'EU AI Act risk flag check', included: true },
-      { label: 'Document drafts', included: false },
-      { label: 'Evidence tracker', included: false },
-      { label: 'Buyer handoff kit', included: false },
     ],
     ctaLabel: 'Run free check',
     ctaHref: '/assessment',
     popular: false,
-    note: 'No credit card required.',
+    note: 'No credit card required. Upgrade when you need document drafts.',
   },
   {
     tier: 'Lite Readiness Snapshot',
@@ -38,20 +35,18 @@ const PACKS = [
       { label: 'EU AI Act risk flag check', included: true },
       { label: 'Readiness summary', included: true },
       { label: 'Founder review before delivery', included: true },
-      { label: 'Evidence tracker', included: false },
-      { label: 'Buyer handoff kit', included: false },
     ],
     ctaLabel: 'Request snapshot',
     ctaHref: '/request?type=snapshot',
     popular: false,
     badge: 'Request-only',
-    note: 'Request-only. Snapshot checkout is not live yet.',
+    note: 'Available on request.',
   },
   {
     tier: 'AI Disclosure Pack',
     price: '$499',
     priceSuffix: 'one-time',
-    description: 'Article 50-oriented disclosure pack for buyer and legal review.',
+    description: 'AI disclosure pack for buyer and legal review - EU AI Act transparency readiness.',
     features: [
       { label: 'AI product eligibility scan', included: true },
       { label: 'Scope assessment report', included: true },
@@ -64,7 +59,7 @@ const PACKS = [
       { label: 'Source notes', included: true },
       { label: '30-day readiness roadmap', included: true },
     ],
-    ctaLabel: 'Start free check',
+    ctaLabel: 'Run assessment to get this pack',
     ctaHref: '/assessment',
     popular: true,
     note: 'Secure PayPal checkout after the free fit check.',
@@ -76,12 +71,12 @@ const PACKS = [
     description: 'Full evidence folder for serious buyer-review moments.',
     features: [
       { label: 'Everything in AI Disclosure Pack', included: true },
-      { label: 'ISO 42001-inspired checklist', included: true },
+      { label: 'ISO/IEC 42001-aligned readiness checklist', included: true },
       { label: 'EU AI Act transparency notes', included: true },
       { label: 'Data processing addendum draft', included: true },
       { label: 'Legal review handoff notes', included: true },
     ],
-    ctaLabel: 'Start free check',
+    ctaLabel: 'Run assessment to get this pack',
     ctaHref: '/assessment',
     popular: false,
     badge: 'Full folder',
@@ -134,7 +129,7 @@ const FAQ_ITEMS = [
 ];
 
 export function PricingPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
     <div className="flex flex-col gap-20 px-5 py-16 md:px-8 lg:px-12">

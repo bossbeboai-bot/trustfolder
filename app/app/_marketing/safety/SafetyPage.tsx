@@ -13,7 +13,7 @@ const IN_SCOPE_ITEMS = [
   'Evidence trackers linking claims to source material',
   'Buyer/legal handoff notes and readiness roadmaps',
   'EU AI Act transparency notes for non-high-risk systems',
-  'ISO 42001-inspired readiness checklists',
+  'ISO/IEC 42001-aligned readiness checklists',
 ];
 
 const OUT_OF_SCOPE_ITEMS = [
@@ -70,7 +70,7 @@ export function SafetyPage() {
             Safe by default. Clear when expert review is needed.
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
-            TrustFolder prepares review-ready governance documents for AI products. We do not auto-generate packs for high-risk use cases that require specialized legal and regulatory expertise.
+            TrustFolder assembles governance documentation for AI products. We do not auto-generate packs for high-risk use cases that require specialized legal and regulatory expertise.
           </p>
         </div>
       </Reveal>

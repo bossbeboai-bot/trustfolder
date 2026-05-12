@@ -36,6 +36,15 @@ const QUOTES = [
   },
 ];
 
+const DELIVERABLES = [
+  'AI disclosure draft',
+  'AI use summary',
+  'Evidence tracker',
+  'Buyer handoff',
+  'Readiness roadmap',
+  'Source notes',
+];
+
 export function AgenciesPage() {
   return (
     <div className="flex flex-col gap-20 px-5 py-16 md:px-8 lg:px-12">
@@ -95,8 +104,8 @@ export function AgenciesPage() {
           <div className="mt-8 flex flex-col gap-6">
             {[
               ['1', 'Request a custom agency pack', 'Tell us about your typical client projects and the AI systems you build.'],
-              ['2', 'We build a reusable template', 'Per-client disclosure templates, data handling explanations, and handoff checklists.'],
-              ['3', 'Customize for each client', 'Fill in client-specific details and deliver a professional governance package.'],
+              ['2', 'We shape the reusable handoff', 'Per-client disclosure structure, data handling explanations, and handoff checklists.'],
+              ['3', 'Review and deliver', "TrustFolder adapts the pack to each client's product - you review and deliver."],
             ].map(([step, title, body]) => (
               <div key={step} className="flex gap-4">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--m-green)] font-mono text-[12px] font-medium text-[color:var(--m-white)]">
@@ -108,6 +117,31 @@ export function AgenciesPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal>
+        <div className="mx-auto max-w-5xl rounded-xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-6 md:p-8">
+          <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-start">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+                Client handoff contents
+              </p>
+              <h2 className="mt-3 font-serif text-[24px] font-semibold leading-tight text-[color:var(--m-black)]">
+                The documents your client can actually review.
+              </h2>
+              <p className="mt-3 text-[14px] leading-relaxed text-[color:var(--m-muted)]">
+                Each engagement creates structured handoff materials around the client&apos;s product and source context.
+              </p>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {DELIVERABLES.map((item) => (
+                <li key={item} className="rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 py-3 text-[13px] font-medium text-[color:var(--m-black)]">
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </Reveal>
@@ -126,7 +160,7 @@ export function AgenciesPage() {
                 <p className="font-mono text-[13px] italic leading-relaxed text-[color:var(--m-black)]">
                   "{quote.text}"
                 </p>
-                <p className="mt-3 text-[12px] text-[color:var(--m-muted)]">Scenario: {quote.author}</p>
+                <p className="mt-3 text-[12px] text-[color:var(--m-muted)]">- {quote.author}</p>
               </div>
             ))}
           </div>
@@ -145,7 +179,7 @@ export function AgenciesPage() {
             Get a repeatable governance asset for your agency
           </h2>
           <p className="mt-3 text-[14px] text-[color:var(--m-muted)]">
-            Custom scope based on your project types and client volume. One-time setup, reusable across client engagements.
+            Request agency pricing - projects can start from single-client pack engagements.
           </p>
           <div className="mt-6 flex justify-center gap-4">
             <a

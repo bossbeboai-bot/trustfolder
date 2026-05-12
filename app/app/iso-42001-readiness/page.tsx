@@ -3,9 +3,9 @@ import { FrameworkLanding } from '../components/FrameworkLanding';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'ISO 42001 Readiness Pack — TrustFolder',
+  title: 'ISO/IEC 42001 Readiness Pack',
   description:
-    'ISO 42001-inspired readiness pack: AI management system readiness checklist, AI policy draft, AI system inventory, and risk register. Not ISO 42001 certification.',
+    'ISO/IEC 42001-aligned readiness pack: AI management system readiness checklist, AI policy draft, AI system inventory, and risk register. Not ISO 42001 certification.',
   path: '/iso-42001-readiness',
 });
 
@@ -14,7 +14,7 @@ export default function Page() {
     <FrameworkLanding
       eyebrow="ISO 42001"
       title="ISO 42001 readiness pack, in plain English."
-      lede="TrustFolder helps you organize an AI management system readiness folder aligned with ISO 42001-inspired concepts. This is a readiness pack, not certification."
+      lede="TrustFolder helps you organize an AI management system readiness folder aligned with ISO/IEC 42001 concepts. This is a readiness pack, not certification."
       problem="ISO 42001 is the new AI management system standard. Buyers reference it, but the actual certification path is long and expensive. TrustFolder gives you a readiness folder so you can show progress today."
       who_for={[
         'B2B AI SaaS teams getting ISO 42001 questions from buyers.',
@@ -53,7 +53,7 @@ export default function Page() {
         },
         {
           q: 'How is this different from the AI governance folder?',
-          a: 'The governance folder is broader and buyer-focused. The ISO 42001 readiness pack is specifically structured around ISO 42001-inspired concepts.',
+          a: 'The governance folder is broader and buyer-focused. The ISO 42001 readiness pack is specifically structured around ISO/IEC 42001 concepts.',
         },
       ]}
     />

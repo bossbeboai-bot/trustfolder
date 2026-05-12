@@ -52,6 +52,7 @@ export function HeroDocumentLoop() {
         loop
         controls={false}
         acknowledgeRemotionLicense
+        numberOfSharedAudioTags={0}
         clickToPlay={false}
         allowFullscreen={false}
         style={{ width: '100%', aspectRatio: `${DOCUMENT_PREVIEW_WIDTH} / ${DOCUMENT_PREVIEW_HEIGHT}` }}

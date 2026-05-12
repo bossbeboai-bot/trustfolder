@@ -26,14 +26,14 @@ const HERO = {
   eyebrow: 'AI Governance · EU AI Act · Buyer Readiness',
   h1: 'Your enterprise buyer just asked how your AI is governed.',
   sub:
-    'TrustFolder scans your product website and produces a structured evidence folder — AI disclosures, governance summary, buyer handoff, and source notes — ready for legal review.',
-  trustLine: ['Not legal advice', 'Not certification', 'Review-ready drafts'],
+    'TrustFolder scans your product website and assembles a structured evidence folder - AI disclosures, governance summary, buyer handoff, and source notes for legal review.',
+  trustLine: ['AI transparency readiness', 'Buyer handoff', 'Source-traced drafts'],
 };
 
 const STATS = [
   ['8', 'documents per pack'],
-  ['< 24h', 'typical turnaround'],
-  ['$499', 'vs $2k+ first-pass legal hour'],
+  ['< 24h', 'typical first draft window'],
+  ['$499', 'starting paid pack'],
 ];
 
 const PROBLEMS = [
@@ -97,14 +97,14 @@ const DOCUMENTS = [
   ['05', 'Buyer / legal handoff', 'Cover sheet + navigation index for senior counsel review.'],
   ['06', 'Source notes', 'Scan log with timestamps — what we read and when.'],
   ['07', '30-day readiness roadmap', 'What to fix next, in order of buyer impact.'],
-  ['08', 'ISO 42001-inspired checklist', 'Readiness checkpoints aligned to the ISO management-system scope.'],
+  ['08', 'ISO/IEC 42001-aligned checklist', 'Readiness checkpoints aligned to the AI management-system scope.'],
   ['09', 'EU AI Act transparency notes', 'Article 50 / 52 readiness notes, not a compliance statement.'],
 ];
 
 const STEPS = [
   ['01', 'Enter your website URL', 'Start with the product page your buyers already review.'],
   ['02', 'Confirm what we found', 'Review AI signals, customer exposure, EU flags, and scope.'],
-  ['03', 'TrustFolder prepares your folder', '8 documents drafted around your specific product.'],
+  ['03', 'TrustFolder assembles your folder', '8 documents drafted around your specific product.'],
   ['04', 'Use it for buyer or legal review', 'Hand a clean package to review — without claiming certification.'],
 ];
 
@@ -144,7 +144,7 @@ const SCENARIO_QUOTES = [
 
 const TRUST_BADGES = [
   'EU AI Act 2026',
-  'ISO/IEC 42001-inspired',
+  'ISO/IEC 42001-aligned checklist',
   'GDPR-aware readiness',
   'Review-ready drafts',
   'Buyer handoff support',
@@ -430,7 +430,7 @@ function DocumentInventory() {
             <SectionEyebrow>Inside the pack</SectionEyebrow>
             <SectionH2>The exact documents that arrive in your folder.</SectionH2>
             <p className="mt-4 max-w-[48ch] text-[14.5px] leading-relaxed text-[color:var(--m-muted)]">
-              Each document is drafted from your actual product website — not a
+              Each document is drafted from your actual product website - not a
               template. Every claim links to a source, so your lawyer starts from a
               cleaner position.
             </p>
@@ -497,7 +497,7 @@ function HowItWorks() {
     <SectionWrap>
       <Reveal>
         <SectionEyebrow>How it works</SectionEyebrow>
-        <SectionH2>From website scan to review-ready folder.</SectionH2>
+        <SectionH2>From website scan to structured evidence folder.</SectionH2>
       </Reveal>
       <ol className="mt-10 grid gap-6 md:grid-cols-4">
         {STEPS.map(([num, title, desc], i) => (
@@ -650,7 +650,7 @@ function PricingPreview() {
         ))}
       </div>
       <div className="mt-8 text-center">
-        <TextCTA href="/pricing">See full pricing →</TextCTA>
+        <TextCTA href="/pricing">See full pricing {'->'}</TextCTA>
       </div>
     </SectionWrap>
   );
@@ -669,7 +669,7 @@ function AgencyStrip() {
           </h3>
           <p className="mt-2 max-w-[44ch] text-[13.5px] leading-relaxed text-white/75">
             TrustFolder gives agencies a repeatable delivery asset for chatbot,
-            agent, and automation projects — without owning the legal review.
+            agent, and automation projects - without owning the legal review.
           </p>
         </div>
         <InverseCTA href="/agencies" size="lg" className="whitespace-nowrap">
@@ -689,19 +689,19 @@ function FinalCTA() {
             Prepare your AI product for serious buyer review.
           </h2>
           <p className="mx-auto mt-4 max-w-[44ch] text-[14.5px] text-[color:var(--m-muted)]">
-            Start with a free eligibility check. Takes about 3 minutes.
+            Start with a free eligibility check. Takes about 3 minutes. Have a scope question? Contact us.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <PrimaryCTA href="/assessment" size="lg">
               Run free check
             </PrimaryCTA>
             <TextCTA href="/request?type=disclosure">
-              Request paid pack →
+              Request paid pack {'->'}
             </TextCTA>
           </div>
-          <p className="mt-8 font-mono text-[11px] tracking-wideish text-[color:var(--m-subtle)]">
-            Not legal advice · Not certification · Not a compliance guarantee
-          </p>
+          <div className="mt-4">
+            <TextCTA href="/contact">Ask a scope question</TextCTA>
+          </div>
         </Reveal>
       </div>
     </section>

@@ -3,9 +3,9 @@ import HomePage from './_marketing/home/HomePage';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'TrustFolder — Review-ready AI governance folders for B2B AI teams',
+  title: 'TrustFolder - AI Governance Documents, Disclosure Drafts, and Buyer-Review Packs',
   description:
-    'TrustFolder scans your AI product website and prepares a structured evidence folder — AI disclosures, governance summary, buyer handoff, and source notes — ready for legal review.',
+    'TrustFolder scans your AI product website and assembles a structured evidence folder with AI disclosures, governance summaries, buyer handoff materials, and source notes.',
   path: '/',
 });
 
