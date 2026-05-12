@@ -1,14 +1,14 @@
 ﻿import type { Metadata } from 'next';
-import MarketingHome from './components/MarketingHome';
+import HomePage from './_marketing/home/HomePage';
 import { buildPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'TrustFolder — AI Governance Documents for B2B AI Companies',
+  title: 'TrustFolder — Review-ready AI governance folders for B2B AI teams',
   description:
-    'TrustFolder prepares review-ready AI disclosure drafts, governance summaries, evidence trackers, source notes, and buyer/legal handoff documents for B2B AI SaaS companies and AI agencies.',
+    'TrustFolder scans your AI product website and prepares a structured evidence folder — AI disclosures, governance summary, buyer handoff, and source notes — ready for legal review.',
   path: '/',
 });
 
-export default function HomePage() {
-  return <MarketingHome />;
+export default function RootHomePage() {
+  return <HomePage />;
 }
