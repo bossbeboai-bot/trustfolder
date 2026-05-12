@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -7,6 +9,10 @@ const nextConfig = {
   },
   // Allow imports from the sibling engine workspace.
   transpilePackages: ['@trustfolder/engine'],
+  webpack: (config) => {
+    config.resolve.alias['@'] = path.resolve(process.cwd());
+    return config;
+  },
 };
 
 export default nextConfig;
