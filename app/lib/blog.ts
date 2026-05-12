@@ -65,3 +65,18 @@ export function formatBlogDate(iso: string): string {
     return iso;
   }
 }
+
+export function cleanBlogText(text: string): string {
+  return text
+    .replaceAll('â€”', '-')
+    .replaceAll('â€“', '-')
+    .replaceAll('Â·', '-')
+    .replaceAll('â†’', '->')
+    .replaceAll('â‰¤', '<=')
+    .replaceAll('â€¦', '...')
+    .replaceAll('â€œ', '"')
+    .replaceAll('â€', '"')
+    .replaceAll('â€˜', "'")
+    .replaceAll('â€™', "'")
+    .replaceAll('â€', '"');
+}

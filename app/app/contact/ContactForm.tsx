@@ -1,17 +1,7 @@
 'use client';
 
-/**
- * ContactForm — POSTs to the same `/api/request` endpoint as the paid-pack
- * lead form, with `source_page='/contact'` so the founder admin can filter
- * inbound contact messages from pack interest.
- *
- * UX rules:
- *  - Local validation on email so we never round-trip a malformed input.
- *  - Form values are preserved on error.
- *  - No instant-checkout language.
- */
-
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 const TOPICS = [
@@ -97,39 +87,39 @@ export default function ContactForm() {
 
   return (
     <motion.section
-      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 20 }}
       animate={reduceMotion ? {} : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-[42px] border border-[var(--tf-border-strong)] bg-[var(--tf-surface)] p-8 shadow-[0_34px_140px_rgba(0,0,0,0.45)] sm:p-12"
+      transition={{ duration: 0.55, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-6 shadow-[0_24px_70px_rgba(28,49,38,0.12)] sm:p-8"
     >
       {state === 'success' ? (
         <div className="flex min-h-[480px] flex-col justify-center">
-          <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-[var(--tf-accent)]">
+          <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-green)]">
             Message received
           </p>
-          <h2 className="mt-5 text-balance text-4xl font-semibold leading-[1.02] tracking-[-0.055em] sm:text-5xl">
+          <h2 className="mt-5 font-serif text-[34px] font-semibold leading-tight text-[color:var(--m-black)] sm:text-[42px]">
             Thanks. We&rsquo;ll reply within 1 business day.
           </h2>
-          <p className="mt-6 text-lg leading-8 text-[var(--tf-slate)]">
+          <p className="mt-6 text-[15px] leading-7 text-[color:var(--m-muted)]">
             If your message needs a quick context check, we may follow up with one or two
             clarifying questions before a longer reply.
           </p>
-          <div className="mt-10 rounded-[28px] border border-[var(--tf-border)] bg-[var(--tf-bg-soft)] p-7 text-base leading-8 text-[var(--tf-slate)]">
+          <div className="mt-10 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-6 text-[14px] leading-7 text-[color:var(--m-muted)]">
             <p>
-              <span className="font-medium text-[var(--tf-ink)]">Topic:</span>{' '}
+              <span className="font-medium text-[color:var(--m-black)]">Topic:</span>{' '}
               {TOPICS.find((t) => t.value === topic)?.label ?? topic}
             </p>
             <p>
-              <span className="font-medium text-[var(--tf-ink)]">From:</span> {email}
+              <span className="font-medium text-[color:var(--m-black)]">From:</span> {email}
             </p>
             {companyName && (
               <p>
-                <span className="font-medium text-[var(--tf-ink)]">Company:</span> {companyName}
+                <span className="font-medium text-[color:var(--m-black)]">Company:</span> {companyName}
               </p>
             )}
             {website && (
               <p>
-                <span className="font-medium text-[var(--tf-ink)]">Website:</span> {website}
+                <span className="font-medium text-[color:var(--m-black)]">Website:</span> {website}
               </p>
             )}
           </div>
@@ -141,23 +131,20 @@ export default function ContactForm() {
                 setErrorMsg(null);
                 setMessage('');
               }}
-              className="inline-flex h-14 items-center justify-center rounded-full border border-[var(--tf-border-strong)] bg-[var(--tf-paper)] px-8 text-base font-medium text-[var(--tf-ink)] transition hover:border-[var(--tf-ink-soft)]/40 hover:bg-[var(--tf-document)]"
+              className="inline-flex h-11 items-center justify-center rounded-lg border border-[color:var(--m-border-mid)] bg-transparent px-5 text-[14px] font-medium text-[color:var(--m-black)] transition hover:border-[color:var(--m-black)] hover:bg-[color:var(--m-cream)]"
             >
               Send another message
             </button>
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-7">
-          <div>
-            <label className="text-base font-medium text-[var(--tf-ink)]" htmlFor="topic">
-              Topic
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <FormField label="Topic" id="topic">
             <select
               id="topic"
               value={topic}
               onChange={(e) => setTopic(e.target.value as typeof topic)}
-              className="mt-3 h-14 w-full rounded-2xl border border-[var(--tf-border-strong)] bg-[var(--tf-bg-soft)] px-5 text-base outline-none transition focus:border-[var(--tf-accent)]"
+              className="mt-3 h-12 w-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 text-[14px] text-[color:var(--m-black)] outline-none transition focus:border-[color:var(--m-green)]"
             >
               {TOPICS.map((t) => (
                 <option key={t.value} value={t.value}>
@@ -165,12 +152,9 @@ export default function ContactForm() {
                 </option>
               ))}
             </select>
-          </div>
+          </FormField>
 
-          <div>
-            <label className="text-base font-medium text-[var(--tf-ink)]" htmlFor="email">
-              Work email
-            </label>
+          <FormField label="Work email" id="email">
             <input
               id="email"
               type="email"
@@ -178,42 +162,33 @@ export default function ContactForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="founder@company.com"
-              className="mt-3 h-14 w-full rounded-2xl border border-[var(--tf-border-strong)] bg-[var(--tf-bg-soft)] px-5 text-base outline-none transition focus:border-[var(--tf-accent)]"
+              className="mt-3 h-12 w-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 text-[14px] text-[color:var(--m-black)] outline-none transition focus:border-[color:var(--m-green)]"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="text-base font-medium text-[var(--tf-ink)]" htmlFor="company">
-              Company name <span className="text-[var(--tf-slate-soft)]">(optional)</span>
-            </label>
+          <FormField label="Company name" id="company" optional>
             <input
               id="company"
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Acme AI"
-              className="mt-3 h-14 w-full rounded-2xl border border-[var(--tf-border-strong)] bg-[var(--tf-bg-soft)] px-5 text-base outline-none transition focus:border-[var(--tf-accent)]"
+              className="mt-3 h-12 w-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 text-[14px] text-[color:var(--m-black)] outline-none transition focus:border-[color:var(--m-green)]"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="text-base font-medium text-[var(--tf-ink)]" htmlFor="website">
-              Website <span className="text-[var(--tf-slate-soft)]">(optional)</span>
-            </label>
+          <FormField label="Website" id="website" optional>
             <input
               id="website"
               type="text"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               placeholder="https://company.ai"
-              className="mt-3 h-14 w-full rounded-2xl border border-[var(--tf-border-strong)] bg-[var(--tf-bg-soft)] px-5 text-base outline-none transition focus:border-[var(--tf-accent)]"
+              className="mt-3 h-12 w-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 text-[14px] text-[color:var(--m-black)] outline-none transition focus:border-[color:var(--m-green)]"
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label className="text-base font-medium text-[var(--tf-ink)]" htmlFor="message">
-              Message
-            </label>
+          <FormField label="Message" id="message">
             <textarea
               id="message"
               required
@@ -221,12 +196,12 @@ export default function ContactForm() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="A short paragraph on what you need or what you would like to discuss..."
               rows={7}
-              className="mt-3 w-full resize-none rounded-2xl border border-[var(--tf-border-strong)] bg-[var(--tf-bg-soft)] px-5 py-4 text-base leading-7 outline-none transition focus:border-[var(--tf-accent)]"
+              className="mt-3 w-full resize-none rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-4 py-4 text-[14px] leading-7 text-[color:var(--m-black)] outline-none transition focus:border-[color:var(--m-green)]"
             />
-          </div>
+          </FormField>
 
           {errorMsg && (
-            <div className="rounded-2xl border border-[#5a2828] bg-[#2a1414] px-5 py-4 text-base text-[#f4a5a5]">
+            <div className="rounded-lg border border-[#c94b4b]/40 bg-[#fff2f2] px-4 py-3 text-[14px] text-[#8a2020]">
               {errorMsg}
             </div>
           )}
@@ -234,16 +209,38 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={state === 'submitting'}
-            className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[var(--tf-ink)] px-8 text-base font-medium text-[var(--tf-on-light)] shadow-[0_18px_60px_rgba(0,0,0,0.45)] transition hover:bg-[var(--tf-ink-soft)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-[color:var(--m-green)] px-6 text-[14px] font-medium text-[color:var(--m-white)] transition hover:bg-[color:var(--m-green-dark)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {state === 'submitting' ? 'Sending…' : 'Send message'}
+            {state === 'submitting' ? 'Sending...' : 'Send message'}
           </button>
 
-          <p className="text-sm leading-7 text-[var(--tf-slate-soft)]">
+          <p className="text-[13px] leading-6 text-[color:var(--m-subtle)]">
             We use this to understand context before replying. Nothing is charged here.
           </p>
         </form>
       )}
     </motion.section>
+  );
+}
+
+function FormField({
+  label,
+  id,
+  optional,
+  children,
+}: {
+  label: string;
+  id: string;
+  optional?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <label className="text-[14px] font-medium text-[color:var(--m-black)]" htmlFor={id}>
+        {label}
+        {optional && <span className="text-[color:var(--m-subtle)]"> (optional)</span>}
+      </label>
+      {children}
+    </div>
   );
 }

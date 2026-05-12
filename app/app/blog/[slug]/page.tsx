@@ -1,9 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { SiteChrome } from '../../components/SiteChrome';
-import { Card, ScopeNote } from '../../components/MarketingPrimitives';
-import { formatBlogDate, getBlogPost, listBlogSlugs } from '@/lib/blog';
+import { MarketingShell } from '../../_marketing/components/Shell';
+import { GhostCTA, PrimaryCTA } from '../../_marketing/components/Button';
+import {
+  cleanBlogText,
+  formatBlogDate,
+  getBlogPost,
+  listBlogSlugs,
+} from '@/lib/blog';
 import { buildPageMetadata } from '@/lib/seo';
 
 type Params = { slug: string };
@@ -25,7 +30,7 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
 
   return buildPageMetadata({
     title: post.title,
-    description: post.description,
+    description: cleanBlogText(post.description),
     path: `/blog/${post.slug}`,
   });
 }
@@ -35,69 +40,76 @@ export default function BlogPostPage({ params }: { params: Params }) {
   if (!post) notFound();
 
   return (
-    <SiteChrome active="product">
-      <main className="mx-auto max-w-[1040px] px-6 py-20 sm:px-8 lg:px-12 lg:py-28 2xl:px-16">
+    <MarketingShell>
+      <article className="mx-auto max-w-[880px] px-6 py-16 md:px-8 md:py-24">
         <Link
           href="/blog"
-          className="font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-accent)] hover:text-[var(--tf-accent-deep)]"
+          className="font-mono text-[11px] uppercase tracking-widest2 text-[color:var(--m-green)] hover:text-[color:var(--m-green-dark)]"
         >
-          ← AI Governance Readiness Guides
+          Back to guides
         </Link>
 
-        <header className="mt-10 border-b border-[var(--tf-border)] pb-12">
-          <div className="flex flex-wrap items-center gap-3 font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-slate-soft)]">
+        <header className="mt-8 border-b border-[color:var(--m-border)] pb-10">
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] uppercase tracking-wideish text-[color:var(--m-subtle)]">
             <span>{formatBlogDate(post.published_at)}</span>
-            <span>·</span>
+            <span>-</span>
             <span>{post.reading_minutes} min read</span>
           </div>
-          <h1 className="mt-6 text-balance text-[clamp(3rem,6vw,5.5rem)] font-semibold leading-[0.96] tracking-[-0.065em] text-[var(--tf-ink)]">
-            {post.title}
+          <h1 className="mt-5 font-serif text-[38px] font-semibold leading-[1.06] text-[color:var(--m-black)] md:text-[58px]">
+            {cleanBlogText(post.title)}
           </h1>
-          <p className="mt-7 max-w-3xl text-xl leading-9 text-[var(--tf-slate)]">
-            {post.lede}
+          <p className="mt-6 text-[18px] leading-8 text-[color:var(--m-muted)]">
+            {cleanBlogText(post.lede)}
           </p>
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className="mt-7 flex flex-wrap gap-2">
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-[var(--tf-border)] bg-[var(--tf-bg-soft)] px-3 py-1 text-xs text-[var(--tf-slate)]"
+                className="rounded-sm border border-[color:var(--m-border)] bg-[color:var(--m-cream)] px-2 py-1 font-mono text-[10px] text-[color:var(--m-subtle)]"
               >
-                {tag}
+                {cleanBlogText(tag)}
               </span>
             ))}
           </div>
         </header>
 
-        <article className="prose prose-invert mt-12 max-w-none prose-headings:tracking-[-0.035em] prose-p:text-[var(--tf-slate)] prose-li:text-[var(--tf-slate)]">
+        <div className="mt-10 space-y-7">
           {post.sections.map((section, index) => {
             if (section.type === 'h2') {
               return (
-                <h2 key={index} id={section.id} className="mt-14 text-3xl font-semibold text-[var(--tf-ink)]">
-                  {section.text}
+                <h2
+                  key={index}
+                  id={section.id}
+                  className="pt-5 font-serif text-[30px] font-semibold leading-tight text-[color:var(--m-black)]"
+                >
+                  {cleanBlogText(section.text)}
                 </h2>
               );
             }
             if (section.type === 'h3') {
               return (
-                <h3 key={index} id={section.id} className="mt-10 text-2xl font-semibold text-[var(--tf-ink)]">
-                  {section.text}
+                <h3
+                  key={index}
+                  id={section.id}
+                  className="pt-3 text-[22px] font-semibold leading-tight text-[color:var(--m-black)]"
+                >
+                  {cleanBlogText(section.text)}
                 </h3>
               );
             }
             if (section.type === 'p') {
               return (
-                <p key={index} className="text-lg leading-9 text-[var(--tf-slate)]">
-                  {section.text}
+                <p key={index} className="text-[17px] leading-8 text-[color:var(--m-muted)]">
+                  {cleanBlogText(section.text)}
                 </p>
               );
             }
             if (section.type === 'ul') {
               return (
-                <ul key={index} className="my-6 space-y-3 pl-0">
+                <ul key={index} className="space-y-3 pl-5 marker:text-[color:var(--m-green)]">
                   {section.items.map((item) => (
-                    <li key={item} className="flex gap-3 text-lg leading-8 text-[var(--tf-slate)]">
-                      <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--tf-accent)]" />
-                      <span>{item}</span>
+                    <li key={item} className="text-[16px] leading-8 text-[color:var(--m-muted)]">
+                      {cleanBlogText(item)}
                     </li>
                   ))}
                 </ul>
@@ -105,13 +117,10 @@ export default function BlogPostPage({ params }: { params: Params }) {
             }
             if (section.type === 'ol') {
               return (
-                <ol key={index} className="my-6 space-y-3 pl-0">
-                  {section.items.map((item, itemIndex) => (
-                    <li key={item} className="flex gap-4 text-lg leading-8 text-[var(--tf-slate)]">
-                      <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-accent)]">
-                        {String(itemIndex + 1).padStart(2, '0')}
-                      </span>
-                      <span>{item}</span>
+                <ol key={index} className="space-y-3 pl-5 marker:font-mono marker:text-[color:var(--m-green)]">
+                  {section.items.map((item) => (
+                    <li key={item} className="text-[16px] leading-8 text-[color:var(--m-muted)]">
+                      {cleanBlogText(item)}
                     </li>
                   ))}
                 </ol>
@@ -121,61 +130,61 @@ export default function BlogPostPage({ params }: { params: Params }) {
               return (
                 <blockquote
                   key={index}
-                  className="my-8 rounded-[28px] border border-[var(--tf-border)] bg-[var(--tf-surface)] p-7 text-xl leading-9 text-[var(--tf-ink-soft)]"
+                  className="rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-6 text-[19px] leading-8 text-[color:var(--m-black)]"
                 >
-                  <p>{section.text}</p>
+                  <p>{cleanBlogText(section.text)}</p>
                   {section.cite && (
-                    <footer className="mt-4 font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-slate-soft)]">
-                      {section.cite}
+                    <footer className="mt-4 font-mono text-[11px] uppercase tracking-wideish text-[color:var(--m-subtle)]">
+                      {cleanBlogText(section.cite)}
                     </footer>
                   )}
                 </blockquote>
               );
             }
             return (
-              <Card key={index} className={section.tone === 'warn' ? 'border-[#cdb47a]/50 bg-[var(--tf-warning-soft)]/60' : ''}>
+              <div
+                key={index}
+                className={`rounded-2xl border p-6 ${
+                  section.tone === 'warn'
+                    ? 'border-[color:var(--m-amber)] bg-[color:var(--m-amber-light)]'
+                    : 'border-[color:var(--m-border)] bg-[color:var(--m-green-light)]'
+                }`}
+              >
                 {section.title && (
-                  <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-accent)]">
-                    {section.title}
+                  <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-green-dark)]">
+                    {cleanBlogText(section.title)}
                   </p>
                 )}
-                <p className="mt-3 text-lg leading-8 text-[var(--tf-slate)]">{section.text}</p>
-              </Card>
+                <p className="mt-3 text-[15px] leading-8 text-[color:var(--m-muted)]">
+                  {cleanBlogText(section.text)}
+                </p>
+              </div>
             );
           })}
-        </article>
-
-        <div className="mt-16">
-          <ScopeNote />
         </div>
 
-        <div className="mt-12 rounded-[32px] border border-[var(--tf-border-strong)] bg-[var(--tf-surface)] p-8 sm:p-10">
-          <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-accent)]">
-            Next step
+        <div className="mt-14 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-7">
+          <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+            Scope note
           </p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--tf-ink)]">
+          <p className="mt-3 text-[14px] leading-7 text-[color:var(--m-muted)]">
+            TrustFolder prepares drafts for review. It is not legal advice, certification, or a compliance guarantee.
+          </p>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-green-light)] p-7">
+          <h2 className="font-serif text-[30px] font-semibold leading-tight text-[color:var(--m-black)]">
             Want to see what TrustFolder would prepare for your AI product?
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--tf-slate)]">
-            Run the free check. We scan your AI product website, ask a few confirmation questions,
-            and show the recommended next step.
+          <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[color:var(--m-muted)]">
+            Run the free check. We scan your AI product website, ask a few confirmation questions, and show the recommended next step.
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/assessment"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[var(--tf-ink)] px-6 text-sm font-medium text-[var(--tf-on-light)] transition hover:bg-[var(--tf-ink-soft)]"
-            >
-              Run free check
-            </Link>
-            <Link
-              href="/examples"
-              className="inline-flex h-12 items-center justify-center rounded-full border border-[var(--tf-border-strong)] px-6 text-sm font-medium text-[var(--tf-ink)] transition hover:bg-[var(--tf-bg-soft)]"
-            >
-              See sample documents
-            </Link>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <PrimaryCTA href="/assessment">Run free check</PrimaryCTA>
+            <GhostCTA href="/examples" size="lg">See sample documents</GhostCTA>
           </div>
         </div>
-      </main>
-    </SiteChrome>
+      </article>
+    </MarketingShell>
   );
 }

@@ -1,10 +1,11 @@
 /**
- * Examples page - document preview gallery with Remotion placeholder
+ * Examples page - document preview gallery with animated product walkthrough
  */
 
 'use client';
 
 import { Reveal } from '../components/Reveal';
+import { DocumentPreviewPlayer } from '../components/DocumentPreviewPlayer';
 
 const SAMPLE_DOCUMENTS = [
   {
@@ -39,7 +40,7 @@ export function ExamplesPage() {
             Examples
           </p>
           <h1 className="mt-4 font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[40px]">
-            See what arrives in your TrustFolder pack
+            See sample TrustFolder packs and document previews
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
             Sample document previews showing the structure and language calibration for buyer review.
@@ -48,39 +49,19 @@ export function ExamplesPage() {
       </Reveal>
 
       <Reveal>
-        <div className="mx-auto max-w-4xl">
-          <div className="relative aspect-video overflow-hidden rounded-xl border border-[color:var(--m-border)] bg-[color:var(--m-cream)]">
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-              <div className="mb-4 rounded-full border-4 border-dashed border-[color:var(--m-border-mid)] p-6">
-                <svg
-                  className="h-12 w-12 text-[color:var(--m-muted)]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p className="font-mono text-[12px] uppercase tracking-widest text-[color:var(--m-subtle)]">
-                Animated preview coming in Phase 3
-              </p>
-              <p className="mt-2 text-[14px] text-[color:var(--m-muted)]">
-                A Remotion animation will show the full document pack assembly process here.
-              </p>
-            </div>
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-6 max-w-2xl">
+            <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+              Animated product walkthrough
+            </p>
+            <h2 className="mt-3 font-serif text-[28px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[34px]">
+              From website scan to review-ready evidence folder
+            </h2>
+            <p className="mt-3 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
+              Watch how TrustFolder moves from website scan to review-ready evidence folder.
+            </p>
           </div>
+          <DocumentPreviewPlayer />
         </div>
       </Reveal>
 
@@ -107,7 +88,7 @@ export function ExamplesPage() {
           {SAMPLE_DOCUMENTS.map((doc, index) => (
             <div
               key={index}
-              className="rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--m-border-mid)]"
+              className="min-w-0 rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--m-border-mid)]"
             >
               <div className="flex items-center justify-between gap-2 border-b border-[color:var(--m-border)] pb-3">
                 <span className="font-mono text-[11px] font-medium tracking-wideish text-[color:var(--m-black)]">
@@ -120,7 +101,7 @@ export function ExamplesPage() {
               <p className="mt-3 text-[13px] leading-relaxed text-[color:var(--m-muted)]">
                 {doc.description}
               </p>
-              <pre className="mt-3 overflow-x-auto rounded bg-[color:var(--m-cream)] p-3 font-mono text-[10px] leading-relaxed text-[color:var(--m-black)]">
+              <pre className="mt-3 max-w-full whitespace-pre-wrap break-words rounded bg-[color:var(--m-cream)] p-3 font-mono text-[10px] leading-relaxed text-[color:var(--m-black)]">
                 {doc.preview}
               </pre>
               <p className="mt-3 font-mono text-[10px] text-[color:var(--m-subtle)]">

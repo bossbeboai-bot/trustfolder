@@ -29,8 +29,8 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_BASE_URL),
   title: {
-    default: `${SITE_NAME} — Review-ready AI governance evidence folders`,
-    template: `%s — ${SITE_NAME}`,
+    default: `${SITE_NAME} - Review-ready AI governance evidence folders`,
+    template: `%s - ${SITE_NAME}`,
   },
   description: SITE_DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
@@ -39,8 +39,12 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: SITE_NAME,
     locale: 'en_US',
+    images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'TrustFolder' }],
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-default.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },

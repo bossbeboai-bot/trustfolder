@@ -4,7 +4,7 @@
  * Implements the 14-section conversion structure defined in
  * trustfolder_windsurf_prompt.md + homepage preview reference.
  *
- * Server component. Client-only sub-components (ScanPipeline, Reveal, Nav)
+ * Server component. Client-only sub-components (HeroDocumentLoop, Reveal, Nav)
  * opt into 'use client' themselves, so this file stays static-rendering
  * friendly.
  */
@@ -17,7 +17,7 @@ import { DocumentCard } from '../components/DocumentCard';
 import { ObjectionCard } from '../components/ObjectionCard';
 import { PricingCard, type PricingFeature } from '../components/PricingCard';
 import { FounderCard } from '../components/FounderCard';
-import { ScanPipeline } from '../components/ScanPipeline';
+import { HeroDocumentLoop } from '../components/HeroDocumentLoop';
 import { Reveal } from '../components/Reveal';
 
 // --- Content constants (copy-bank per brief §SAMPLE COPY BANK) ----------
@@ -257,7 +257,7 @@ function Hero() {
           </Reveal>
 
           <Reveal delay={0.12}>
-            <ScanPipeline />
+            <HeroDocumentLoop />
           </Reveal>
         </div>
       </div>

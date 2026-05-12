@@ -1,61 +1,71 @@
-import { SiteChrome } from '../components/SiteChrome';
-import { PageHeader } from '../components/MarketingPrimitives';
-import ContactForm from './ContactForm';
 import type { Metadata } from 'next';
+import { MarketingShell } from '../_marketing/components/Shell';
+import { TextHero } from '../_marketing/components/TextPage';
+import ContactForm from './ContactForm';
 
 export const metadata: Metadata = {
-  title: 'Contact — TrustFolder',
+  title: 'Contact',
   description:
-    'Custom scope, partnerships, advisor interest, support, or press. Reach the TrustFolder founder directly.',
+    'Product questions, enterprise buyer handoff questions, agency inquiries, and scope questions for sensitive AI modules.',
 };
 
 export default function ContactPage() {
   return (
-    <SiteChrome active="contact">
-      <PageHeader
+    <MarketingShell>
+      <TextHero
         eyebrow="Contact"
-        title="Custom scope, partnerships, advisor interest, support, or press."
-        lede="The fastest path to a reply is to send your context here. The same form sits behind every founder request, so nothing is lost."
+        title="Contact TrustFolder about scope, handoff, or fit."
+        lede="Product questions, enterprise buyer handoff questions, agency inquiries, and scope questions for sensitive AI modules all start here."
       />
 
-      <section className="mx-auto grid max-w-[1520px] gap-14 px-6 pb-28 pt-14 sm:px-8 lg:grid-cols-[0.88fr_1.12fr] lg:px-12 lg:pb-32 2xl:px-16">
+      <section className="mx-auto grid max-w-site gap-10 px-6 pb-24 md:px-8 lg:grid-cols-[0.82fr_1.18fr]">
         <div>
-          <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-[var(--tf-accent)]">
+          <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
             What this is for
           </p>
-          <ul className="mt-6 space-y-4 text-lg leading-9 text-[var(--tf-slate)]">
+          <ul className="mt-6 space-y-4 text-[15px] leading-8 text-[color:var(--m-muted)]">
             {[
-              'Custom scope or pack variations',
-              'Partnerships with agencies and studios',
-              'Advisor or design-partner interest',
+              'Product questions before the free check',
+              'Enterprise or buyer handoff questions',
+              'Agency inquiries and repeatable client delivery',
+              'Scope questions for sensitive AI modules',
               'Support on a delivered pack',
-              'Press, podcasts, and writing requests',
             ].map((row, i) => (
               <li key={row} className="flex items-baseline gap-4">
-                <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-slate-soft)]">{`0${i + 1}`}</span>
+                <span className="font-mono text-[11px] uppercase tracking-wideish text-[color:var(--m-subtle)]">{`0${i + 1}`}</span>
                 <span>{row}</span>
               </li>
             ))}
           </ul>
 
-          <div className="mt-12 rounded-[30px] border border-[var(--tf-border-strong)] bg-[var(--tf-surface)] p-8 text-base leading-8 text-[var(--tf-slate)] shadow-[0_22px_80px_rgba(7,17,31,0.1)] backdrop-blur-xl">
-            <p className="font-mono text-[13px] uppercase tracking-[0.18em] text-[var(--tf-accent)]">
-              Reply window
+          <div className="mt-10 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-green-light)] p-6">
+            <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-green-dark)]">
+              Clear routing
             </p>
-            <p className="mt-4 text-xl font-semibold tracking-[-0.03em] text-[var(--tf-ink)]">A person reads every message.</p>
-            <p className="mt-3 text-base leading-8 text-[var(--tf-slate)]">
-              We reply within 1 business day. No auto-responder. No queue. The reply is from a
-              person on the founding team.
+            <p className="mt-3 text-[15px] leading-7 text-[color:var(--m-muted)]">
+              We will tell you clearly if your use case needs expert review rather than an automated pack.
             </p>
           </div>
 
-          <p className="mt-10 font-mono text-[12px] uppercase tracking-[0.18em] text-[var(--tf-slate-soft)]">
-            Not legal advice · Not certification · Not a compliance guarantee
+          <div className="mt-6 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-6">
+            <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+              Direct email
+            </p>
+            <a
+              href="mailto:aaron.miller198@protonmail.com"
+              className="mt-3 inline-flex text-[15px] font-medium text-[color:var(--m-green)] underline-offset-4 hover:underline"
+            >
+              aaron.miller198@protonmail.com
+            </a>
+          </div>
+
+          <p className="mt-8 font-mono text-[11px] uppercase tracking-wideish text-[color:var(--m-subtle)]">
+            Not legal advice - Not certification - Not a compliance guarantee
           </p>
         </div>
 
         <ContactForm />
       </section>
-    </SiteChrome>
+    </MarketingShell>
   );
 }

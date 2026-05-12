@@ -48,12 +48,11 @@ export interface BuildPageMetadataInput {
 export function buildPageMetadata(input: BuildPageMetadataInput): Metadata {
   const url = `${SITE_BASE_URL}${input.path}`;
   const ogImage = `${SITE_BASE_URL}${input.ogImagePath ?? '/og-default.png'}`;
-  const fullTitle = input.title.includes(SITE_NAME)
-    ? input.title
-    : `${input.title} — ${SITE_NAME}`;
+  const pageTitle = input.title.replace(/\s+(?:-|—)\s+TrustFolder(?:\s+Blog)?$/, '');
+  const fullTitle = `${pageTitle} - ${SITE_NAME}`;
 
   return {
-    title: fullTitle,
+    title: pageTitle,
     description: input.description,
     alternates: { canonical: url },
     robots: input.noindex
