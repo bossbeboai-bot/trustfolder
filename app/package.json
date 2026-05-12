@@ -10,11 +10,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.3",
+    "@supabase/supabase-js": "^2.105.4",
     "@trustfolder/engine": "file:../engine",
+    "cheerio": "^1.2.0",
     "framer-motion": "^11.18.2",
+    "jszip": "^3.10.1",
     "next": "^14.2.13",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "resend": "^4.8.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
