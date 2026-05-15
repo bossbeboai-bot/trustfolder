@@ -5,21 +5,21 @@ import { buildPageMetadata } from '@/lib/seo';
 export const metadata: Metadata = buildPageMetadata({
   title: 'ISO/IEC 42001 Readiness Pack',
   description:
-    'ISO/IEC 42001-aligned readiness pack: AI management system readiness checklist, AI policy draft, AI system inventory, and risk register. Not ISO 42001 certification.',
+    'ISO/IEC 42001-aligned readiness pack: AI management system readiness checklist, AI policy draft, AI system inventory, and risk register. Not certification.',
   path: '/iso-42001-readiness',
 });
 
 export default function Page() {
   return (
     <FrameworkLanding
-      eyebrow="ISO 42001"
-      title="ISO 42001 readiness pack, in plain English."
+      eyebrow="ISO/IEC 42001"
+      title="ISO/IEC 42001-aligned readiness pack, in plain English."
       lede="TrustFolder helps you organize an AI management system readiness folder aligned with ISO/IEC 42001 concepts. This is a readiness pack, not certification."
-      problem="ISO 42001 is the new AI management system standard. Buyers reference it, but the actual certification path is long and expensive. TrustFolder gives you a readiness folder so you can show progress today."
+      problem="ISO/IEC 42001 is the AI management system standard. Buyers may reference it, but the formal certification path is long and specialized. TrustFolder gives you a readiness folder so you can show progress today."
       who_for={[
-        'B2B AI SaaS teams getting ISO 42001 questions from buyers.',
+        'B2B AI SaaS teams getting ISO/IEC 42001 questions from buyers.',
         'AI governance leads building a structured AI management system.',
-        'Founders preparing for an eventual ISO 42001 readiness review.',
+        'Founders preparing for an eventual ISO/IEC 42001 readiness review.',
       ]}
       what_we_prepare={[
         'AI management system readiness checklist.',
@@ -32,7 +32,7 @@ export default function Page() {
         'Internal governance handoff.',
       ]}
       what_we_dont_guarantee={[
-        'This is not ISO 42001 certification.',
+        'This is not certification.',
         'A formal certification path requires a qualified certification body.',
         'TrustFolder is not the certification body.',
       ]}
@@ -44,7 +44,7 @@ export default function Page() {
         'Monitoring and improvement log',
         'Internal governance handoff',
       ]}
-      primary_cta={{ href: '/request?type=iso42001-readiness', label: 'Request ISO 42001 readiness pack' }}
+      primary_cta={{ href: '/request?type=iso42001-readiness', label: 'Request ISO/IEC 42001-aligned pack' }}
       secondary_cta={{ href: '/safety', label: 'Read safety policy' }}
       faqs={[
         {
@@ -53,7 +53,7 @@ export default function Page() {
         },
         {
           q: 'How is this different from the AI governance folder?',
-          a: 'The governance folder is broader and buyer-focused. The ISO 42001 readiness pack is specifically structured around ISO/IEC 42001 concepts.',
+          a: 'The governance folder is broader and buyer-focused. The ISO/IEC 42001-aligned readiness pack is specifically structured around AI management system concepts.',
         },
       ]}
     />

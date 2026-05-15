@@ -112,7 +112,7 @@ try {
 // Flow D: all secondary pages render with a clickable primary CTA
 // ---------------------------------------------------------------------------
 const secondaries = [
-  ['/pricing', /pricing|pack|preparation/i],
+  ['/pricing', /pricing|pack|preparation|buyer-review evidence/i],
   ['/examples', /examples|sample|structure/i],
   ['/safety', /safe|scope|safety/i],
   ['/agencies', /agencies|agency|handoff/i],

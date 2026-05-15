@@ -234,7 +234,7 @@ const PLANNED_MODULES = [
   'GDPR AI/data readiness pack',
   'Enterprise security questionnaire support',
   'DPA / privacy agreement handoff pack',
-  'Full ISO 42001 readiness pack',
+  'Full ISO/IEC 42001-aligned readiness pack',
 ] as const;
 
 const EXPERT_REVIEW_AREAS = [
@@ -259,7 +259,7 @@ const MODULE_GROUPS = [
       ['SOC 2 readiness evidence pack', '/request?type=soc2-readiness'],
       ['Enterprise security questionnaire support', '/request?type=security-questionnaire'],
       ['GDPR AI/data readiness pack', '/request?type=gdpr-ai-data-readiness'],
-      ['ISO 42001 readiness pack', '/request?type=iso42001-readiness'],
+      ['ISO/IEC 42001-aligned readiness pack', '/request?type=iso42001-readiness'],
     ],
   },
   {

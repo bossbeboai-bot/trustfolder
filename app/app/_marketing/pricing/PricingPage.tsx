@@ -5,6 +5,7 @@
 'use client';
 
 import { useState } from 'react';
+import { DocumentDictionary } from '../components/DocumentDictionary';
 import { PricingCard } from '../components/PricingCard';
 import { Reveal } from '../components/Reveal';
 
@@ -140,10 +141,10 @@ export function PricingPage() {
             Pricing
           </p>
           <h1 className="mt-4 font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[40px]">
-            Simple, transparent pricing for AI governance documents
+            Choose the buyer-review evidence level after the free check
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
-            One-time payment. No subscriptions. No hidden fees.
+            Start with a readiness check, then request a snapshot or continue to the pack that fits your buyer review moment.
           </p>
         </div>
       </Reveal>
@@ -155,6 +156,31 @@ export function PricingPage() {
             <PricingCard key={index} {...pack} />
           ))}
         </div>
+      </Reveal>
+
+      <Reveal>
+        <div className="mx-auto max-w-4xl rounded-xl border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-6 md:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+                Sample packet
+              </p>
+              <p className="mt-2 max-w-[58ch] text-[14px] leading-relaxed text-[color:var(--m-muted)]">
+                Review an illustrative buyer packet before choosing a snapshot, disclosure pack, or governance folder.
+              </p>
+            </div>
+            <a
+              href="/sample-ai-governance-documents"
+              className="inline-flex h-11 shrink-0 items-center justify-center rounded-lg border border-[color:var(--m-border-mid)] px-5 text-[14px] font-medium text-[color:var(--m-black)] transition-colors hover:border-[color:var(--m-black)] hover:bg-[color:var(--m-cream)]"
+            >
+              See sample packet
+            </a>
+          </div>
+        </div>
+      </Reveal>
+
+      <Reveal>
+        <DocumentDictionary />
       </Reveal>
 
       {/* Founder Note */}

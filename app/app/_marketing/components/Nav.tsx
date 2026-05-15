@@ -67,8 +67,8 @@ export function Nav() {
           })}
         </nav>
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <GhostCTA href="/examples" size="md">
-            See sample pack
+          <GhostCTA href="/sample-ai-governance-documents" size="md">
+            See sample packet
           </GhostCTA>
           <PrimaryCTA href="/assessment" size="md">
             Run free check
@@ -102,8 +102,8 @@ export function Nav() {
             ))}
           </nav>
           <div className="mt-auto flex flex-col gap-3 px-6 pb-10">
-            <GhostCTA href="/examples" size="lg" className="w-full">
-              See sample pack
+            <GhostCTA href="/sample-ai-governance-documents" size="lg" className="w-full">
+              See sample packet
             </GhostCTA>
             <PrimaryCTA href="/assessment" size="lg" className="w-full">
               Run free check {'->'}

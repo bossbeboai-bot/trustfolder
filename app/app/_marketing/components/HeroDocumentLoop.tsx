@@ -48,6 +48,7 @@ export function HeroDocumentLoop() {
         compositionWidth={DOCUMENT_PREVIEW_WIDTH}
         compositionHeight={DOCUMENT_PREVIEW_HEIGHT}
         fps={DOCUMENT_PREVIEW_FPS}
+        initialFrame={36}
         autoPlay
         loop
         controls={false}

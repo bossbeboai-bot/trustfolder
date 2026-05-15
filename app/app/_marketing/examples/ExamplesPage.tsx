@@ -5,6 +5,7 @@
 'use client';
 
 import { Reveal } from '../components/Reveal';
+import { DocumentDictionary } from '../components/DocumentDictionary';
 import { DocumentPreviewPlayer } from '../components/DocumentPreviewPlayer';
 
 const SAMPLE_DOCUMENTS = [
@@ -37,10 +38,10 @@ export function ExamplesPage() {
             Examples
           </p>
           <h1 className="mt-4 font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[40px]">
-            See sample TrustFolder packs and document previews
+            Sample AI governance documents and buyer-review packet
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
-            Sample document previews showing the structure and language calibration for buyer review.
+            See how disclosure drafts, evidence trackers, source notes, and handoff materials are shaped for buyer and legal review.
           </p>
         </div>
       </Reveal>
@@ -64,10 +65,10 @@ export function ExamplesPage() {
               Want this mapped to your own AI product website?
             </p>
             <a
-              href="/assessment"
+              href="/sample-ai-governance-documents"
               className="inline-flex h-11 items-center justify-center rounded-lg bg-[color:var(--m-green)] px-5 text-[14px] font-medium text-[color:var(--m-white)] transition-colors hover:bg-[color:var(--m-green-dark)]"
             >
-              Get this for your product
+              See sample buyer packet
             </a>
           </div>
         </div>
@@ -119,6 +120,10 @@ export function ExamplesPage() {
       </Reveal>
 
       <Reveal>
+        <DocumentDictionary />
+      </Reveal>
+
+      <Reveal>
         <div className="mx-auto max-w-3xl text-center">
           <p className="font-serif text-[24px] font-semibold text-[color:var(--m-black)]">
             Want a pack like this for your product?
@@ -134,10 +139,10 @@ export function ExamplesPage() {
               Run free check
             </a>
             <a
-              href="/request"
+              href="/sample-ai-governance-documents"
               className="inline-flex h-11 items-center justify-center rounded-lg border border-[color:var(--m-border-mid)] px-6 text-[14px] font-medium text-[color:var(--m-black)] transition-colors hover:border-[color:var(--m-black)] hover:bg-[color:var(--m-cream)]"
             >
-              Request a pack
+              See sample packet
             </a>
           </div>
         </div>

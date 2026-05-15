@@ -25,6 +25,7 @@ export function Footer() {
           <FooterLink href="/">Overview</FooterLink>
           <FooterLink href="/pricing">Pricing</FooterLink>
           <FooterLink href="/examples">Examples</FooterLink>
+          <FooterLink href="/sample-ai-governance-documents">Sample packet</FooterLink>
           <FooterLink href="/agencies">Agencies</FooterLink>
           <FooterLink href="/safety">Safety</FooterLink>
         </nav>

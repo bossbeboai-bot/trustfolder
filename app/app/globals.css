@@ -19,6 +19,7 @@
   --m-green-light: #E8F4EE;
   --m-green-dark: #0F4530;
   --m-amber: #92681A;
+  --m-amber-dark: #6F4B10;
   --m-amber-light: #FDF3DC;
   --m-red: #8B2020;
   --m-red-light: #FDEAEA;
@@ -110,6 +111,31 @@ body {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* Public legacy flows such as /assessment, /request, /login, and the
+   framework landing pages still use the older --tf-* token names. This
+   wrapper remaps those tokens to the current light marketing system without
+   touching dashboard/admin internals. */
+.tf-public-light {
+  color-scheme: light;
+  --tf-bg: var(--m-white);
+  --tf-bg-soft: var(--m-cream);
+  --tf-surface: var(--m-white);
+  --tf-document: var(--m-cream);
+  --tf-paper: var(--m-white);
+  --tf-ink: var(--m-black);
+  --tf-ink-soft: #2f332f;
+  --tf-slate: var(--m-muted);
+  --tf-slate-soft: var(--m-subtle);
+  --tf-border: var(--m-border);
+  --tf-border-strong: var(--m-border-mid);
+  --tf-accent: var(--m-green);
+  --tf-accent-deep: var(--m-green-dark);
+  --tf-accent-soft: var(--m-green-light);
+  --tf-warning-soft: var(--m-amber-light);
+  --tf-success-soft: var(--m-green-light);
+  --tf-on-light: var(--m-white);
+}
+
 /* Entrance reveal helper for non-JS/low-JS fallback. Framer Motion handles
    the JS variant via <Reveal>. */
 @media (prefers-reduced-motion: no-preference) {
@@ -124,4 +150,3 @@ body {
     transform: translateY(0);
   }
 }
-

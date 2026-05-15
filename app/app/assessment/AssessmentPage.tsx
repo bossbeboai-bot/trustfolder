@@ -25,6 +25,7 @@ import {
   TrustNote,
 } from '../components/MarketingPrimitives';
 import { ReadinessScoreCard, type ReadinessScoreView } from '../components/ReadinessScoreCard';
+import { DocumentDictionary } from '../_marketing/components/DocumentDictionary';
 
 // ---------- types ----------
 type Step = 'enter' | 'scanning' | 'confirm' | 'review' | 'result' | 'out_of_scope';
@@ -467,15 +468,14 @@ function PageHero() {
         className="mx-auto max-w-[1520px]"
       >
         <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(15,124,138,0.2)] bg-[var(--tf-accent-soft)] px-4 py-1.5">
-          <MonoLabel>Free eligibility check</MonoLabel>
+          <MonoLabel>Free readiness check</MonoLabel>
         </span>
         <h1 className="mt-7 max-w-5xl text-balance text-[clamp(3rem,5.2vw,6rem)] font-semibold leading-[0.98] tracking-[-0.06em]">
-          See whether TrustFolder fits your AI product
-          <span className="text-[var(--tf-accent)]"> — in two minutes</span>.
+          Find the AI governance gaps your buyer will ask about before they do.
         </h1>
         <p className="mt-7 max-w-4xl text-pretty text-xl leading-9 text-[var(--tf-slate)]">
-          Scan your AI product website, confirm a few details, and see whether we can prepare a
-          buyer-ready evidence folder for your team. Each request is reviewed by a founder.
+          Scan your product website, confirm the AI context, and see whether TrustFolder can
+          prepare a source-traced evidence folder.
         </p>
       </motion.div>
     </section>
@@ -1045,6 +1045,9 @@ function Step4Result(props: {
             </motion.button>
           );
         })}
+      </div>
+      <div className="mt-8 rounded-[28px] border border-[var(--tf-border)] bg-[var(--tf-bg-soft)] p-6 sm:p-8">
+        <DocumentDictionary compact />
       </div>
       {props.confirm.band === 'REVIEW' && (
         <p className="mt-6 rounded-2xl border border-[#cdb47a]/40 bg-[var(--tf-warning-soft)] px-6 py-5 text-base leading-7 text-[#7a4a00]">

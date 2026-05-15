@@ -6,7 +6,7 @@
  * single CTA pattern so all eight pages stay consistent.
  *
  * Wording rules:
- *  - Never claim certification, full compliance, or audit-proof status.
+ *  - Never claim certification or guarantee-style legal outcomes.
  *  - Always include the standard disclaimer.
  *  - Always describe sample outputs as drafts / readiness material.
  */

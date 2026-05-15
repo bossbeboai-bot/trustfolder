@@ -7,7 +7,7 @@ export function ReadinessScoreScene({ start }: { start: number }) {
   const frame = useCurrentFrame();
   const local = frame - start;
   const score = Math.round(
-    interpolate(local, [8, 54], [0, 74], {
+    interpolate(local, [0, 54], [58, 74], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
     }),
@@ -71,7 +71,7 @@ export function ReadinessScoreScene({ start }: { start: number }) {
           gap: 18,
         }}
       >
-        {['Review-ready folder prepared', 'Buyer/legal handoff included', 'Start your free check'].map((label, index) => {
+        {['Source-traced packet prepared', 'Open review items included', 'Start your free check'].map((label, index) => {
           const opacity = interpolate(local, [44 + index * 18, 64 + index * 18], [0, 1], {
             extrapolateLeft: 'clamp',
             extrapolateRight: 'clamp',
@@ -99,4 +99,3 @@ export function ReadinessScoreScene({ start }: { start: number }) {
     </div>
   );
 }
-

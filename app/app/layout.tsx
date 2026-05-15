@@ -48,9 +48,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico' },
-      { url: '/logo-trustfolder.svg', type: 'image/svg+xml' },
+      { url: '/logo-trustfolder-mark-transparent.png', type: 'image/png' },
     ],
-    apple: '/logo-trustfolder.svg',
+    apple: '/trustfolder-social-avatar.png',
   },
 };
 

@@ -33,6 +33,7 @@ import {
   MonoNumeral,
   TrustNote,
 } from './MarketingPrimitives';
+import { DocumentDictionary } from '../_marketing/components/DocumentDictionary';
 
 const options = {
   snapshot: 'AI Website Trust Snapshot',
@@ -44,7 +45,7 @@ const options = {
   'security-questionnaire': 'Enterprise Security Questionnaire Support',
   'gdpr-ai-data-readiness': 'GDPR AI/Data Readiness Pack',
   'dpa-privacy-handoff': 'DPA / Privacy Agreement Handoff Pack',
-  'iso42001-readiness': 'ISO 42001 Readiness Pack',
+  'iso42001-readiness': 'ISO/IEC 42001-Aligned Readiness Pack',
   'hipaa-healthcare-intake': 'HIPAA / Healthcare Data Intake Pack',
   'medical-ai-intake': 'Medical AI Expert-Review Intake',
   'employment-ai-intake': 'Hiring AI Expert-Review Intake',
@@ -87,7 +88,7 @@ const HEADLINE: Record<OptionKey, string> = {
   'security-questionnaire': 'Request enterprise security questionnaire support.',
   'gdpr-ai-data-readiness': 'Request your GDPR AI/data readiness pack.',
   'dpa-privacy-handoff': 'Apply for a DPA / privacy handoff pack.',
-  'iso42001-readiness': 'Request your ISO 42001 readiness pack.',
+  'iso42001-readiness': 'Request your ISO/IEC 42001-aligned readiness pack.',
   'hipaa-healthcare-intake': 'Apply for HIPAA / healthcare data intake.',
   'medical-ai-intake': 'Apply for medical AI expert-review intake.',
   'employment-ai-intake': 'Apply for hiring AI expert-review intake.',
@@ -378,7 +379,7 @@ export default function RequestPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[var(--tf-bg)] text-[var(--tf-ink)]">
+    <div className="tf-marketing tf-public-light min-h-screen overflow-hidden bg-[var(--tf-bg)] text-[var(--tf-ink)]">
       <SiteHeader />
 
       {/* ----------------------------------------------------------------- */}
@@ -412,6 +413,8 @@ export default function RequestPage() {
       <WhatYouGet
         description="TrustFolder helps B2B AI companies prepare review-ready AI governance documents, including AI disclosure drafts, AI use summaries, evidence trackers, source notes, buyer/legal handoff notes, and ISO/IEC 42001-aligned readiness checklists."
       />
+
+      <DocumentDictionary />
 
       {/* ----------------------------------------------------------------- */}
       {/* 2. What happens next — timeline                                    */}

@@ -1,153 +1,54 @@
-/**
- * Marketing homepage — Phase 4 rebuild.
- *
- * Implements the 14-section conversion structure defined in
- * trustfolder_windsurf_prompt.md + homepage preview reference.
- *
- * Server component. Client-only sub-components (HeroDocumentLoop, Reveal, Nav)
- * opt into 'use client' themselves, so this file stays static-rendering
- * friendly.
- */
-
-import type { ReactNode } from 'react';
 import { MarketingShell } from '../components/Shell';
-import { PrimaryCTA, GhostCTA, TextCTA, InverseCTA } from '../components/Button';
-import { TrustBadge, CheckDot } from '../components/TrustBadge';
-import { DocumentCard } from '../components/DocumentCard';
-import { ObjectionCard } from '../components/ObjectionCard';
-import { PricingCard, type PricingFeature } from '../components/PricingCard';
+import type { ReactNode } from 'react';
+import { PrimaryCTA, GhostCTA, TextCTA } from '../components/Button';
+import { DocumentDictionary } from '../components/DocumentDictionary';
 import { FounderCard } from '../components/FounderCard';
 import { HeroDocumentLoop } from '../components/HeroDocumentLoop';
+import { PricingCard, type PricingFeature } from '../components/PricingCard';
 import { Reveal } from '../components/Reveal';
-
-// --- Content constants (copy-bank per brief §SAMPLE COPY BANK) ----------
+import { CheckDot, TrustBadge } from '../components/TrustBadge';
 
 const HERO = {
-  eyebrow: 'AI Governance · EU AI Act · Buyer Readiness',
-  h1: 'Your enterprise buyer just asked how your AI is governed.',
+  h1: "Enterprise buyers don't pause deals over AI features. They pause over missing governance evidence.",
   sub:
-    'TrustFolder scans your product website and assembles a structured evidence folder - AI disclosures, governance summary, buyer handoff, and source notes for legal review.',
-  trustLine: ['AI transparency readiness', 'Buyer handoff', 'Source-traced drafts'],
+    'TrustFolder scans your AI product website and assembles a source-traced evidence folder: disclosure drafts, AI use summary, governance summary, evidence tracker, open review items, readiness roadmap, and buyer/legal handoff.',
+  trustLine: ['Source-traced artifacts', 'Buyer/legal handoff', 'Not legal advice'],
 };
 
-const STATS = [
-  ['8', 'documents per pack'],
-  ['< 24h', 'typical first draft window'],
-  ['$499', 'starting paid pack'],
+const TRUST_ITEMS = [
+  'EU AI Act Article 50 transparency rules start applying on 2 Aug 2026',
+  'ISO/IEC 42001-aligned readiness checklist, not certification',
+  'Evidence folder designed for buyer and counsel review',
 ];
 
-const PROBLEMS = [
-  "AI claims scattered across product, pricing, and about pages",
-  "Buyer or legal questions arrive late in the deal",
-  "No one owns the documentation internally",
-  "Free templates don't know your specific product",
-  "Lawyers charge $400/hr to start from your messy notes",
+const WITHOUT_ITEMS = [
+  'AI claims scattered across product pages, pitch decks, and internal notes',
+  'No clear source trail for what the product actually says',
+  'Counsel starts from messy context instead of a structured packet',
+  'Buyer review slows while the team reconstructs answers',
 ];
 
-const SOLUTIONS = [
-  "One structured folder, scanned from your actual website",
-  "Review-ready in hours, not weeks",
-  "8 specific documents, not a generic template",
-  "Every claim traced back to a source",
-  "Your lawyer starts from a clean first draft",
+const WITH_ITEMS = [
+  'Source-traced folder assembled from the product website and intake answers',
+  'Disclosure drafts, evidence tracker, and source notes in one place',
+  'Open review items called out instead of buried',
+  'Buyer/legal handoff gives counsel a clean starting point',
 ];
 
-const OBJECTION_CARDS = [
+const CHATGPT_COMPARE = [
   {
-    title: 'A chat prompt',
-    items: [
-      'Generates generic paragraphs',
-      'No source tracing',
-      "Lawyer can't verify claims",
-      'No folder structure',
-      'Starts from nothing',
-    ],
-    variant: 'neutral' as const,
+    title: 'A prompt',
+    items: ['Drafts generic paragraphs', 'Does not know the product surface', 'No source trail', 'No open-items list'],
   },
   {
-    title: 'A generic template',
-    items: [
-      'Blank fields to fill in',
-      'Not product-specific',
-      'No website scan',
-      'No readiness score',
-      'No buyer handoff layer',
-    ],
-    variant: 'neutral' as const,
+    title: 'A template',
+    items: ['Leaves blanks for the founder', 'No website scan', 'No readiness score', 'No buyer packet'],
   },
   {
     title: 'TrustFolder',
-    items: [
-      'Scanned from your actual website',
-      'Every claim traced to a source',
-      'Scored against EU AI Act signals',
-      'Structured pack a lawyer can review',
-      'Buyer handoff layer included',
-    ],
-    variant: 'featured' as const,
-    badge: 'Structured',
+    featured: true,
+    items: ['Scans the live product context', 'Traces claims to sources', 'Flags review gaps', 'Prepares a buyer packet'],
   },
-];
-
-const DOCUMENTS = [
-  ['01', 'AI disclosure drafts', 'Plain-language disclosure for your product page and vendor intake.'],
-  ['02', 'AI use summary', 'One-paragraph summary of how AI is used inside the product.'],
-  ['03', 'Evidence tracker', 'Every claim mapped to a verifiable source on your site.'],
-  ['04', 'Governance summary', 'Who is accountable for AI decisions, review cadence, and escalation.'],
-  ['05', 'Buyer / legal handoff', 'Cover sheet + navigation index for senior counsel review.'],
-  ['06', 'Source notes', 'Scan log with timestamps — what we read and when.'],
-  ['07', '30-day readiness roadmap', 'What to fix next, in order of buyer impact.'],
-  ['08', 'ISO/IEC 42001-aligned checklist', 'Readiness checkpoints aligned to the AI management-system scope.'],
-  ['09', 'EU AI Act transparency notes', 'Article 50 / 52 readiness notes, not a compliance statement.'],
-];
-
-const STEPS = [
-  ['01', 'Enter your website URL', 'Start with the product page your buyers already review.'],
-  ['02', 'Confirm what we found', 'Review AI signals, customer exposure, EU flags, and scope.'],
-  ['03', 'TrustFolder assembles your folder', '8 documents drafted around your specific product.'],
-  ['04', 'Use it for buyer or legal review', 'Hand a clean package to review — without claiming certification.'],
-];
-
-const BEFORE_LIST = [
-  'Buyer emails asking for AI governance docs',
-  'Founder opens Notion, Slack, 4 browser tabs',
-  'Sales call paused for "legal review"',
-  'Three weeks later the deal re-engages',
-  'Legal team still improvising answers',
-];
-
-const AFTER_LIST = [
-  'Buyer asks. You send the TrustFolder pack.',
-  'Disclosure drafts, governance summary, source notes',
-  'Evidence tracker with every claim verified',
-  'Lawyer reviews a clean starting folder',
-  'Deal moves forward.',
-];
-
-const SCENARIO_QUOTES = [
-  {
-    text:
-      "A prospect's legal team just asked for our AI disclosure docs. We don't have anything written down. What do we even send them?",
-    from: 'Founder, B2B AI SaaS',
-  },
-  {
-    text:
-      "Our enterprise RFP has 12 questions about AI governance and data use. I've been copy-pasting from our website and it looks terrible.",
-    from: 'Head of Product, AI agency',
-  },
-  {
-    text:
-      "We're EU-based and selling to German banks. They want to see our AI Act transparency docs. We have nothing.",
-    from: 'Co-founder, AI automation platform',
-  },
-];
-
-const TRUST_BADGES = [
-  'EU AI Act 2026',
-  'ISO/IEC 42001-aligned checklist',
-  'GDPR-aware readiness',
-  'Review-ready drafts',
-  'Buyer handoff support',
 ];
 
 const PRICING_PREVIEW: Array<{
@@ -159,153 +60,116 @@ const PRICING_PREVIEW: Array<{
   ctaLabel: string;
   ctaHref: string;
   popular?: boolean;
+  badge?: string;
+  note?: string;
 }> = [
   {
-    tier: 'Free',
+    tier: 'Free check',
     price: '$0',
-    description: 'Eligibility check — see where your AI product stands in minutes.',
+    description: 'Fit and readiness check. No document pack generated.',
     features: [
-      { label: 'Readiness verdict', included: true },
-      { label: 'AI signal scan', included: true },
-      { label: 'Pack generation', included: false },
+      { label: 'Website scan and intake flow', included: true },
+      { label: 'Fit/readiness result', included: true },
+      { label: 'Recommended next step', included: true },
     ],
     ctaLabel: 'Run free check',
     ctaHref: '/assessment',
+    note: 'Best first step for every buyer-review moment.',
   },
   {
-    tier: 'Disclosure Pack',
+    tier: 'Lite Readiness Snapshot',
+    price: '$99',
+    priceSuffix: 'one-time',
+    description: 'A short founder-reviewed snapshot for early-stage AI products.',
+    features: [
+      { label: 'Readiness summary', included: true },
+      { label: 'Disclosure areas', included: true },
+      { label: 'Request-only delivery', included: true },
+    ],
+    ctaLabel: 'Request snapshot',
+    ctaHref: '/request?type=snapshot',
+    badge: 'Request-only',
+    note: 'Available on request.',
+  },
+  {
+    tier: 'AI Disclosure Pack',
     price: '$499',
-    priceSuffix: 'one-off',
-    description: 'Core 8-document pack for buyer and legal review.',
+    priceSuffix: 'one-time',
+    description: 'Core disclosure docs and placement guidance after assessment.',
     features: [
-      { label: '8 documents drafted from your site', included: true },
-      { label: 'Source notes + evidence tracker', included: true },
-      { label: 'Buyer handoff cover sheet', included: true },
+      { label: 'Disclosure drafts', included: true },
+      { label: 'AI use summary', included: true },
+      { label: 'Source notes and handoff note', included: true },
     ],
-    ctaLabel: 'Request disclosure pack',
-    ctaHref: '/request?type=disclosure',
+    ctaLabel: 'Run assessment to get this pack',
+    ctaHref: '/assessment',
     popular: true,
+    note: 'Secure PayPal checkout after fit is confirmed.',
   },
   {
-    tier: 'Buyer-ready Folder',
+    tier: 'Buyer-Ready Folder',
     price: '$999',
-    priceSuffix: 'one-off',
-    description: 'Everything in the pack plus EU AI Act + ISO 42001 readiness notes.',
+    priceSuffix: 'one-time',
+    description: 'Governance folder with buyer-review packet and roadmap.',
     features: [
-      { label: 'Disclosure pack + readiness notes', included: true },
-      { label: '30-day roadmap + expert follow-up', included: true },
-      { label: 'Buyer / vendor intake ready', included: true },
+      { label: 'Disclosure + governance artifacts', included: true },
+      { label: 'Evidence tracker and open review items', included: true },
+      { label: 'Buyer review packet', included: true },
     ],
-    ctaLabel: 'Request buyer folder',
-    ctaHref: '/request?type=buyer-ready',
+    ctaLabel: 'Run assessment to get this pack',
+    ctaHref: '/assessment',
+    badge: 'Full folder',
+    note: 'Secure PayPal checkout after fit is confirmed.',
+  },
+  {
+    tier: 'Premium Handoff',
+    price: '$2,500+',
+    priceSuffix: 'custom',
+    description: 'Manual buyer/legal handoff for complex review moments.',
+    features: [
+      { label: 'Custom scope', included: true },
+      { label: 'Manual invoice', included: true },
+      { label: 'Application-only', included: true },
+    ],
+    ctaLabel: 'Apply for handoff',
+    ctaHref: '/request?type=premium',
+    badge: 'Manual',
+    note: 'No automated checkout.',
   },
 ];
 
-// --- Page -----------------------------------------------------------------
+const SCENARIOS = [
+  {
+    text:
+      "A prospect's legal team just asked for our AI governance docs. We have product copy, but nothing they can actually review.",
+    from: 'Founder, B2B AI SaaS',
+  },
+  {
+    text:
+      'The buyer wants our AI use, data handling, and human review posture in one place. We are still pulling it from three tools.',
+    from: 'Head of Product, AI agency',
+  },
+  {
+    text:
+      'We need a first draft our lawyer can start from, with sources and open questions already visible.',
+    from: 'Co-founder, AI automation platform',
+  },
+];
 
 export default function HomePage() {
   return (
     <MarketingShell>
       <Hero />
-      <StatBar />
-      <ProblemSection />
-      <ObjectionSection />
-      <DocumentInventory />
-      <HowItWorks />
-      <BeforeAfter />
-      <FounderSignal />
-      <Quotes />
-      <TrustBadgeRow />
+      <BuyerProofStrip />
+      <EvidenceProblem />
+      <ProductStory />
+      <DocumentDictionary />
+      <ChatGPTComparison />
+      <SamplePacketCTA />
       <PricingPreview />
-      <AgencyStrip />
+      <ProofSection />
       <FinalCTA />
     </MarketingShell>
-  );
-}
-
-// --- Sections -------------------------------------------------------------
-
-function Hero() {
-  return (
-    <section className="relative overflow-hidden">
-      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">
-        <div className="grid items-center gap-10 md:grid-cols-[1.08fr_0.92fr]">
-          <Reveal>
-            <p className="font-mono text-[11px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
-              {HERO.eyebrow}
-            </p>
-            <h1 className="mt-4 font-serif text-[36px] font-semibold leading-[1.08] tracking-tightish text-[color:var(--m-black)] md:text-[52px]">
-              {HERO.h1}
-            </h1>
-            <p className="mt-6 max-w-[48ch] text-[16px] leading-relaxed text-[color:var(--m-muted)] md:text-[17px]">
-              {HERO.sub}
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <PrimaryCTA href="/assessment" size="lg">
-                Run free readiness check
-              </PrimaryCTA>
-              <TextCTA href="/examples">See a sample folder →</TextCTA>
-            </div>
-            <div className="mt-6 flex flex-wrap items-center gap-4 font-mono text-[11px] tracking-wideish text-[color:var(--m-subtle)]">
-              {HERO.trustLine.map((t) => (
-                <span key={t} className="inline-flex items-center gap-1.5">
-                  <CheckDot />
-                  {t}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.12}>
-            <HeroDocumentLoop />
-          </Reveal>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatBar() {
-  return (
-    <section className="border-y border-[color:var(--m-border)] bg-[color:var(--m-cream)]">
-      <div className="mx-auto grid max-w-site grid-cols-1 md:grid-cols-3">
-        {STATS.map(([n, label], i) => (
-          <div
-            key={label}
-            className={`px-6 py-7 text-center md:px-8 md:py-8 ${
-              i > 0 ? 'border-t border-[color:var(--m-border)] md:border-l md:border-t-0' : ''
-            }`}
-          >
-            <p className="font-serif text-[32px] font-semibold leading-none text-[color:var(--m-black)] md:text-[36px]">
-              {n}
-            </p>
-            <p className="mt-2 text-[13px] text-[color:var(--m-muted)]">{label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionWrap({
-  children,
-  className = '',
-  tone = 'white',
-}: {
-  children: ReactNode;
-  className?: string;
-  tone?: 'white' | 'cream' | 'dark';
-}) {
-  const bg =
-    tone === 'cream'
-      ? 'bg-[color:var(--m-cream)]'
-      : tone === 'dark'
-      ? 'bg-[color:var(--m-black)] text-[color:var(--m-white)]'
-      : 'bg-[color:var(--m-white)]';
-  return (
-    <section className={`${bg} ${className}`}>
-      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">{children}</div>
-    </section>
   );
 }
 
@@ -317,244 +181,37 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-function SectionH2({ children, className = '' }: { children: ReactNode; className?: string }) {
+function Hero() {
   return (
-    <h2
-      className={`mt-3 max-w-[30ch] font-serif text-[28px] font-semibold leading-tight tracking-tightish text-[color:var(--m-black)] md:text-[36px] ${className}`}
-    >
-      {children}
-    </h2>
-  );
-}
-
-function ProblemSection() {
-  return (
-    <SectionWrap tone="cream">
-      <Reveal>
-        <SectionEyebrow>The problem</SectionEyebrow>
-        <SectionH2>The deal stalls when legal asks about AI.</SectionH2>
-      </Reveal>
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
-        <Reveal delay={0.05}>
-          <ProblemColumn
-            tone="bad"
-            label="Without TrustFolder"
-            items={PROBLEMS}
-            icon="✗"
-          />
-        </Reveal>
-        <Reveal delay={0.12}>
-          <ProblemColumn
-            tone="good"
-            label="With TrustFolder"
-            items={SOLUTIONS}
-            icon="✓"
-          />
-        </Reveal>
-      </div>
-    </SectionWrap>
-  );
-}
-
-function ProblemColumn({
-  tone,
-  label,
-  items,
-  icon,
-}: {
-  tone: 'bad' | 'good';
-  label: string;
-  items: string[];
-  icon: string;
-}) {
-  const bg = tone === 'bad' ? 'bg-[color:var(--m-red-light)]' : 'bg-[color:var(--m-green-light)]';
-  const chipBg =
-    tone === 'bad'
-      ? 'bg-[rgba(139,32,32,0.12)] text-[color:var(--m-red)]'
-      : 'bg-[rgba(26,107,74,0.14)] text-[color:var(--m-green-dark)]';
-  const iconColor = tone === 'bad' ? 'text-[color:var(--m-red)]' : 'text-[color:var(--m-green-dark)]';
-  return (
-    <div className={`rounded-xl p-6 md:p-7 ${bg}`}>
-      <span className={`inline-block rounded-sm px-2 py-0.5 font-mono text-[11px] tracking-wideish ${chipBg}`}>
-        {label}
-      </span>
-      <ul className="mt-4 divide-y divide-[color:var(--m-border)]">
-        {items.map((it) => (
-          <li key={it} className="flex items-start gap-3 py-3 text-[13.5px] leading-relaxed text-[color:var(--m-muted)]">
-            <span aria-hidden className={`mt-[3px] font-mono text-[13px] ${iconColor}`}>
-              {icon}
-            </span>
-            <span>{it}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function ObjectionSection() {
-  return (
-    <SectionWrap>
-      <Reveal>
-        <SectionEyebrow>Objection killer</SectionEyebrow>
-        <SectionH2>Why not just ask ChatGPT?</SectionH2>
-      </Reveal>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {OBJECTION_CARDS.map((card, i) => (
-          <Reveal key={card.title} delay={0.05 + i * 0.06}>
-            <ObjectionCard
-              title={card.title}
-              items={card.items}
-              variant={card.variant}
-              badge={'badge' in card ? card.badge : undefined}
-            />
-          </Reveal>
-        ))}
-      </div>
-      <Reveal delay={0.25}>
-        <p className="mt-8 rounded-md bg-[color:var(--m-cream)] px-5 py-4 font-mono text-[12px] italic leading-relaxed text-[color:var(--m-muted)]">
-          The difference isn&apos;t speed. It&apos;s structure, traceability, and a first draft your
-          lawyer can actually start from.
-        </p>
-      </Reveal>
-    </SectionWrap>
-  );
-}
-
-function DocumentInventory() {
-  return (
-    <SectionWrap tone="cream">
-      <div className="grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-start">
-        <div>
-          <Reveal>
-            <SectionEyebrow>Inside the pack</SectionEyebrow>
-            <SectionH2>The exact documents that arrive in your folder.</SectionH2>
-            <p className="mt-4 max-w-[48ch] text-[14.5px] leading-relaxed text-[color:var(--m-muted)]">
-              Each document is drafted from your actual product website - not a
-              template. Every claim links to a source, so your lawyer starts from a
-              cleaner position.
-            </p>
-          </Reveal>
-
-          <ul className="mt-8 divide-y divide-[color:var(--m-border)] rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-white)]">
-            {DOCUMENTS.map(([num, name, desc], i) => (
-              <Reveal as="li" key={num} delay={0.03 * i}>
-                <div className="group grid grid-cols-[auto_1fr] items-start gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-[color:var(--m-cream)]">
-                  <span className="mt-0.5 font-mono text-[11px] text-[color:var(--m-subtle)]">
-                    {num}
-                  </span>
-                  <div>
-                    <p className="text-[13.5px] font-medium text-[color:var(--m-black)]">
-                      {name}
-                    </p>
-                    <p className="mt-1 text-[12.5px] leading-relaxed text-[color:var(--m-muted)] opacity-0 transition-opacity duration-200 group-hover:opacity-100 md:opacity-80">
-                      {desc}
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-
-        <div className="space-y-3">
-          <Reveal delay={0.1}>
-            <DocumentCard
-              docNumber="01"
-              title="AI DISCLOSURE DRAFT"
-              stamp="Draft — prepared for review"
-              previewLines={5}
-              source="acme.ai/product — sample"
-            />
-          </Reveal>
-          <Reveal delay={0.18}>
-            <DocumentCard
-              docNumber="03"
-              title="EVIDENCE TRACKER"
-              stamp="Linked to sources"
-              previewLines={4}
-              blurred
-            />
-          </Reveal>
-          <Reveal delay={0.24}>
-            <DocumentCard
-              docNumber="05"
-              title="BUYER / LEGAL HANDOFF"
-              stamp="Cover sheet"
-              previewLines={3}
-              source="Prepared for review by counsel"
-              accent="featured"
-            />
-          </Reveal>
-        </div>
-      </div>
-    </SectionWrap>
-  );
-}
-
-function HowItWorks() {
-  return (
-    <SectionWrap>
-      <Reveal>
-        <SectionEyebrow>How it works</SectionEyebrow>
-        <SectionH2>From website scan to structured evidence folder.</SectionH2>
-      </Reveal>
-      <ol className="mt-10 grid gap-6 md:grid-cols-4">
-        {STEPS.map(([num, title, desc], i) => (
-          <Reveal as="li" key={num} delay={0.05 + i * 0.07}>
-            <div className="relative h-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-5 transition-colors duration-200 hover:border-[color:var(--m-border-mid)]">
-              <div className="flex items-center gap-2 font-mono text-[10px] font-medium tracking-wideish text-[color:var(--m-green)]">
-                <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-[color:var(--m-green)]" />
-                Step {num}
-              </div>
-              <p className="mt-3 text-[14px] font-medium text-[color:var(--m-black)]">{title}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[color:var(--m-muted)]">{desc}</p>
-            </div>
-          </Reveal>
-        ))}
-      </ol>
-    </SectionWrap>
-  );
-}
-
-function BeforeAfter() {
-  return (
-    <section className="bg-[color:var(--m-black)] text-[color:var(--m-white)]">
+    <section className="relative overflow-hidden bg-[color:var(--m-white)]">
       <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">
-        <Reveal>
-          <p className="font-mono text-[10px] uppercase tracking-widest2 text-white/50">
-            Before. After.
-          </p>
-          <h2 className="mt-3 max-w-[30ch] font-serif text-[28px] font-semibold leading-tight tracking-tightish text-white md:text-[36px]">
-            Before TrustFolder. After TrustFolder.
-          </h2>
-        </Reveal>
-        <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-white/10 md:grid-cols-2">
-          <Reveal className="h-full">
-            <div className="h-full bg-[rgba(139,32,32,0.22)] p-7">
-              <p className="font-mono text-[10px] uppercase tracking-widest2 text-white/50">Before</p>
-              <ul className="mt-5 space-y-3 text-[13.5px] text-white/70">
-                {BEFORE_LIST.map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <span aria-hidden className="mt-1 h-1 w-1 shrink-0 rounded-full bg-white/40" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
+        <div className="grid items-center gap-10 md:grid-cols-[1.02fr_0.98fr]">
+          <Reveal>
+            <h1 className="font-serif text-[40px] font-semibold leading-[1.03] tracking-tightish text-[color:var(--m-black)] md:text-[62px]">
+              {HERO.h1}
+            </h1>
+            <p className="mt-6 max-w-[56ch] text-[16px] leading-relaxed text-[color:var(--m-muted)] md:text-[18px]">
+              {HERO.sub}
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <PrimaryCTA href="/assessment" size="lg">
+                Run free readiness check
+              </PrimaryCTA>
+              <GhostCTA href="/sample-ai-governance-documents" size="lg">
+                See sample buyer packet
+              </GhostCTA>
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-4 font-mono text-[11px] tracking-wideish text-[color:var(--m-subtle)]">
+              {HERO.trustLine.map((item) => (
+                <span key={item} className="inline-flex items-center gap-1.5">
+                  <CheckDot />
+                  {item}
+                </span>
+              ))}
             </div>
           </Reveal>
-          <Reveal delay={0.08} className="h-full">
-            <div className="h-full bg-[rgba(26,107,74,0.28)] p-7">
-              <p className="font-mono text-[10px] uppercase tracking-widest2 text-white/60">After</p>
-              <ul className="mt-5 space-y-3 text-[13.5px] text-white/85">
-                {AFTER_LIST.map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <span aria-hidden className="mt-1 h-1 w-1 shrink-0 rounded-full bg-[color:var(--m-green-light)]" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <Reveal delay={0.12}>
+            <HeroDocumentLoop />
           </Reveal>
         </div>
       </div>
@@ -562,73 +219,168 @@ function BeforeAfter() {
   );
 }
 
-function FounderSignal() {
-  return (
-    <SectionWrap>
-      <div className="grid gap-10 md:grid-cols-[1fr_1.4fr] md:items-center">
-        <Reveal>
-          <SectionEyebrow>Founder signal</SectionEyebrow>
-          <SectionH2>Built by someone who&apos;s been in the room.</SectionH2>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <FounderCard
-            name="Aaron Miller"
-            initials="AM"
-            bio="Built TrustFolder after watching AI founders lose deals to documentation gaps they didn't know existed. The product is opinionated about what buyers and legal teams actually need to see."
-            email="aaron.miller198@protonmail.com"
-          />
-        </Reveal>
-      </div>
-    </SectionWrap>
-  );
-}
-
-function Quotes() {
-  return (
-    <SectionWrap tone="cream">
-      <Reveal>
-        <SectionEyebrow>Scenarios</SectionEyebrow>
-        <SectionH2>What founders ask before they have TrustFolder.</SectionH2>
-        <p className="mt-3 max-w-[56ch] text-[13.5px] text-[color:var(--m-muted)]">
-          Scenario-based quotes, not named customers. TrustFolder was built for exactly these moments.
-        </p>
-      </Reveal>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {SCENARIO_QUOTES.map((q, i) => (
-          <Reveal key={q.from} delay={0.06 + i * 0.05}>
-            <article className="h-full rounded-lg border border-[color:var(--m-border)] bg-[color:var(--m-white)] p-5">
-              <p className="border-l-2 border-[color:var(--m-border-mid)] pl-3 text-[12.5px] italic leading-relaxed text-[color:var(--m-muted)]">
-                “{q.text}”
-              </p>
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
-                — {q.from}
-              </p>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-    </SectionWrap>
-  );
-}
-
-function TrustBadgeRow() {
+function BuyerProofStrip() {
   return (
     <section className="border-y border-[color:var(--m-border)] bg-[color:var(--m-cream)]">
-      <div className="mx-auto flex max-w-site flex-col items-center gap-4 px-6 py-8 text-center md:px-8">
+      <div className="mx-auto grid max-w-site gap-px md:grid-cols-3">
+        {TRUST_ITEMS.map((item) => (
+          <div key={item} className="bg-[color:var(--m-cream)] px-6 py-7 text-center md:px-8">
+            <p className="mx-auto max-w-[30ch] text-[13px] leading-relaxed text-[color:var(--m-muted)]">
+              {item}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EvidenceProblem() {
+  return (
+    <section className="bg-[color:var(--m-cream)]">
+      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">
         <Reveal>
-          <ul className="flex flex-wrap items-center justify-center gap-2">
-            {TRUST_BADGES.map((t) => (
-              <li key={t}>
-                <TrustBadge variant="framework">
-                  <span aria-hidden className="mr-1 text-[color:var(--m-green)]">✦</span>
-                  {t}
-                </TrustBadge>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 max-w-[56ch] text-[12px] text-[color:var(--m-subtle)]">
-            Frameworks TrustFolder helps you prepare for. Not certifications.
+          <SectionEyebrow>Buyer review reality</SectionEyebrow>
+          <h2 className="mt-3 max-w-[28ch] font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[44px]">
+            When legal asks, the problem is not AI. It is evidence.
+          </h2>
+        </Reveal>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <ComparisonPanel title="Without TrustFolder" tone="bad" items={WITHOUT_ITEMS} />
+          <ComparisonPanel title="With TrustFolder" tone="good" items={WITH_ITEMS} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ComparisonPanel({
+  title,
+  tone,
+  items,
+}: {
+  title: string;
+  tone: 'bad' | 'good';
+  items: string[];
+}) {
+  return (
+    <Reveal>
+      <article
+        className={`h-full rounded-2xl border p-7 ${
+          tone === 'good'
+            ? 'border-[color:var(--m-green)] bg-[color:var(--m-green-light)]'
+            : 'border-[color:var(--m-border)] bg-[color:var(--m-white)]'
+        }`}
+      >
+        <p
+          className={`font-mono text-[11px] uppercase tracking-widest2 ${
+            tone === 'good' ? 'text-[color:var(--m-green-dark)]' : 'text-[color:var(--m-subtle)]'
+          }`}
+        >
+          {title}
+        </p>
+        <ul className="mt-5 divide-y divide-[color:var(--m-border)]">
+          {items.map((item) => (
+            <li key={item} className="flex gap-3 py-4 text-[14px] leading-relaxed text-[color:var(--m-muted)]">
+              <span className={tone === 'good' ? 'text-[color:var(--m-green)]' : 'text-[color:var(--m-red)]'}>
+                {tone === 'good' ? '+' : '-'}
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </Reveal>
+  );
+}
+
+function ProductStory() {
+  return (
+    <section className="bg-[color:var(--m-white)]">
+      <div className="mx-auto grid max-w-site gap-10 px-6 py-16 md:grid-cols-[0.8fr_1.2fr] md:px-8 md:py-24 md:items-center">
+        <Reveal>
+          <SectionEyebrow>Product story</SectionEyebrow>
+          <h2 className="mt-3 max-w-[13ch] font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[42px]">
+            From scan to buyer packet.
+          </h2>
+          <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-[color:var(--m-muted)]">
+            See how public product context becomes a structured evidence folder with a readiness score, open review items, and handoff output.
           </p>
+          <div className="mt-6">
+            <TextCTA href="/examples">Watch the walkthrough {'->'}</TextCTA>
+          </div>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <HeroDocumentLoop />
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function ChatGPTComparison() {
+  return (
+    <section className="bg-[color:var(--m-cream)]">
+      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">
+        <Reveal>
+          <SectionEyebrow>Not another prompt</SectionEyebrow>
+          <h2 className="mt-3 max-w-[30ch] font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[44px]">
+            A prompt can draft words. It cannot prove what your product actually says.
+          </h2>
+        </Reveal>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {CHATGPT_COMPARE.map((card) => (
+            <Reveal key={card.title}>
+              <article
+                className={`h-full rounded-2xl border p-6 ${
+                  card.featured
+                    ? 'border-[color:var(--m-green)] bg-[color:var(--m-green-light)]'
+                    : 'border-[color:var(--m-border)] bg-[color:var(--m-white)]'
+                }`}
+              >
+                <p className="font-serif text-[22px] font-semibold text-[color:var(--m-black)]">
+                  {card.title}
+                </p>
+                <ul className="mt-5 grid gap-3">
+                  {card.items.map((item) => (
+                    <li key={item} className="flex gap-3 text-[13.5px] leading-relaxed text-[color:var(--m-muted)]">
+                      <span className={card.featured ? 'text-[color:var(--m-green)]' : 'text-[color:var(--m-subtle)]'}>
+                        {card.featured ? '+' : '-'}
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SamplePacketCTA() {
+  return (
+    <section className="bg-[color:var(--m-white)]">
+      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-20">
+        <Reveal>
+          <div className="grid gap-8 rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-green)] p-8 text-[color:var(--m-white)] md:grid-cols-[1fr_auto] md:items-center md:p-10">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-widest2 text-white/65">
+                Illustrative sample
+              </p>
+              <h2 className="mt-3 max-w-[22ch] font-serif text-[32px] font-semibold leading-tight md:text-[42px]">
+                See the buyer packet before you request one.
+              </h2>
+              <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-white/75">
+                A fictional HTML packet showing the structure buyers and lawyers receive: scope, readiness score, document inventory, source trail, and open review items.
+              </p>
+            </div>
+            <GhostCTA href="/sample-ai-governance-documents" size="lg" className="border-white/50 text-white hover:bg-white hover:text-[color:var(--m-green-dark)]">
+              Open sample packet
+            </GhostCTA>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -637,44 +389,66 @@ function TrustBadgeRow() {
 
 function PricingPreview() {
   return (
-    <SectionWrap>
-      <Reveal>
-        <SectionEyebrow>Pricing preview</SectionEyebrow>
-        <SectionH2>Start free. Upgrade when a buyer actually asks.</SectionH2>
-      </Reveal>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {PRICING_PREVIEW.map((p, i) => (
-          <Reveal key={p.tier} delay={0.06 + i * 0.06}>
-            <PricingCard {...p} />
-          </Reveal>
-        ))}
+    <section className="bg-[color:var(--m-cream)]">
+      <div className="mx-auto max-w-site px-6 py-16 md:px-8 md:py-24">
+        <Reveal>
+          <SectionEyebrow>Pricing ladder</SectionEyebrow>
+          <h2 className="mt-3 max-w-[24ch] font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[44px]">
+            Start with the check. Choose the evidence level after fit is clear.
+          </h2>
+        </Reveal>
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+          {PRICING_PREVIEW.map((pack) => (
+            <Reveal key={pack.tier}>
+              <PricingCard {...pack} />
+            </Reveal>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <TextCTA href="/pricing">Compare all pricing {'->'}</TextCTA>
+        </div>
       </div>
-      <div className="mt-8 text-center">
-        <TextCTA href="/pricing">See full pricing {'->'}</TextCTA>
-      </div>
-    </SectionWrap>
+    </section>
   );
 }
 
-function AgencyStrip() {
+function ProofSection() {
   return (
-    <section className="bg-[color:var(--m-green)] text-[color:var(--m-white)]">
-      <div className="mx-auto flex max-w-site flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between md:px-8">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-widest2 text-white/65">
-            For AI agencies
-          </p>
-          <h3 className="mt-2 max-w-[32ch] font-serif text-[22px] font-semibold leading-tight text-white md:text-[26px]">
-            AI agency? Add governance to every client handoff.
-          </h3>
-          <p className="mt-2 max-w-[44ch] text-[13.5px] leading-relaxed text-white/75">
-            TrustFolder gives agencies a repeatable delivery asset for chatbot,
-            agent, and automation projects - without owning the legal review.
-          </p>
+    <section className="bg-[color:var(--m-white)]">
+      <div className="mx-auto grid max-w-site gap-12 px-6 py-16 md:px-8 md:py-24">
+        <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-center">
+          <Reveal>
+            <SectionEyebrow>Founder signal</SectionEyebrow>
+            <h2 className="mt-3 max-w-[16ch] font-serif text-[32px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[42px]">
+              Built by someone who has been in the room.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <FounderCard
+              name="Aaron Miller"
+              initials="AM"
+              bio="Built TrustFolder after watching AI founders lose deals to documentation gaps they did not know existed. The product is opinionated about what buyers and legal teams actually need to see."
+              email="aaron.miller198@protonmail.com"
+            />
+          </Reveal>
         </div>
-        <InverseCTA href="/agencies" size="lg" className="whitespace-nowrap">
-          Explore agency packs →
-        </InverseCTA>
+        <Reveal>
+          <div className="grid gap-5 md:grid-cols-3">
+            {SCENARIOS.map((scenario) => (
+              <article key={scenario.from} className="rounded-2xl border border-[color:var(--m-border)] bg-[color:var(--m-cream)] p-6">
+                <p className="font-serif text-[20px] italic leading-relaxed text-[color:var(--m-black)]">
+                  "{scenario.text}"
+                </p>
+                <p className="mt-5 font-mono text-[10px] uppercase tracking-widest2 text-[color:var(--m-subtle)]">
+                  - {scenario.from}
+                </p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-5 text-center text-[12px] leading-relaxed text-[color:var(--m-subtle)]">
+            Scenario-based proof points, not named customer testimonials.
+          </p>
+        </Reveal>
       </div>
     </section>
   );
@@ -685,21 +459,23 @@ function FinalCTA() {
     <section className="bg-[color:var(--m-cream)]">
       <div className="mx-auto max-w-site px-6 py-20 text-center md:px-8 md:py-24">
         <Reveal>
-          <h2 className="mx-auto max-w-[22ch] font-serif text-[32px] font-semibold leading-tight tracking-tightish text-[color:var(--m-black)] md:text-[40px]">
-            Prepare your AI product for serious buyer review.
+          <ul className="mb-7 flex flex-wrap items-center justify-center gap-2">
+            {['EU AI Act transparency-readiness', 'Source-traced drafts', 'Buyer review handoff'].map((item) => (
+              <li key={item}>
+                <TrustBadge>{item}</TrustBadge>
+              </li>
+            ))}
+          </ul>
+          <h2 className="mx-auto max-w-[24ch] font-serif text-[34px] font-semibold leading-tight text-[color:var(--m-black)] md:text-[46px]">
+            Prepare the evidence before the buyer asks twice.
           </h2>
-          <p className="mx-auto mt-4 max-w-[44ch] text-[14.5px] text-[color:var(--m-muted)]">
-            Start with a free eligibility check. Takes about 3 minutes. Have a scope question? Contact us.
+          <p className="mx-auto mt-4 max-w-[48ch] text-[15px] leading-relaxed text-[color:var(--m-muted)]">
+            Start with a free readiness check. If your product fits, choose the snapshot, disclosure pack, governance folder, or manual handoff path.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <PrimaryCTA href="/assessment" size="lg">
-              Run free check
+              Run free readiness check
             </PrimaryCTA>
-            <TextCTA href="/request?type=disclosure">
-              Request paid pack {'->'}
-            </TextCTA>
-          </div>
-          <div className="mt-4">
             <TextCTA href="/contact">Ask a scope question</TextCTA>
           </div>
         </Reveal>

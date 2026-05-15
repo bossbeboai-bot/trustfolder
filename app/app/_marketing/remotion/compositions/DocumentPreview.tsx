@@ -28,14 +28,17 @@ export function DocumentPreview() {
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(circle at 80% 20%, rgba(26,107,74,0.1), transparent 28%), linear-gradient(180deg, rgba(250,250,248,0.9), rgba(245,243,238,1))',
+            'linear-gradient(180deg, rgba(250,250,248,0.96), rgba(245,243,238,1))',
         }}
       />
       {scenes.map(({ start, end, component: Scene }) => {
-        const fadeIn = interpolate(frame, [start, start + 14], [0, 1], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-        });
+        const fadeIn =
+          start === 0
+            ? 1
+            : interpolate(frame, [start, start + 14], [0, 1], {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+              });
         const fadeOut = interpolate(frame, [end - 14, end], [1, 0], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
@@ -50,4 +53,3 @@ export function DocumentPreview() {
     </AbsoluteFill>
   );
 }
-

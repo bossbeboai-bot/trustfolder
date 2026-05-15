@@ -94,6 +94,7 @@ export const PUBLIC_ROUTES: ReadonlyArray<{
   { path: '/', changefreq: 'weekly', priority: 1.0 },
   { path: '/pricing', changefreq: 'weekly', priority: 0.9 },
   { path: '/examples', changefreq: 'monthly', priority: 0.8 },
+  { path: '/sample-ai-governance-documents', changefreq: 'monthly', priority: 0.8 },
   { path: '/agencies', changefreq: 'monthly', priority: 0.8 },
   { path: '/safety', changefreq: 'monthly', priority: 0.7 },
   { path: '/contact', changefreq: 'monthly', priority: 0.6 },

@@ -57,7 +57,7 @@ export default function TermsPage() {
         <TextSection eyebrow="Payments and refunds" title="Payment terms.">
           <p>
             Paid packs are delivered after payment is confirmed by our payment provider. Refunds are handled per /refund. Some tiers are
-            request-only and are not billed via instant checkout.
+            request-only and are not billed through automated checkout.
           </p>
         </TextSection>
 

@@ -13,9 +13,10 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Logo } from '../_marketing/components/Logo';
 
 const NAV_LINKS = [
-  ['Product', '/'],
+  ['Overview', '/'],
   ['Pricing', '/pricing'],
   ['Examples', '/examples'],
   ['Agencies', '/agencies'],
@@ -25,10 +26,10 @@ const NAV_LINKS = [
 
 export function SiteHeader({ active }: { active?: string }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--tf-border)]/80 bg-[var(--tf-bg)]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-[var(--tf-border)] bg-[var(--tf-bg)]/85 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between gap-8 px-6 sm:px-8 lg:px-12 2xl:px-16">
-        <Link href="/" className="text-xl font-semibold tracking-[-0.04em] text-[var(--tf-ink)]">
-          TrustFolder
+        <Link href="/" className="text-xl font-semibold tracking-[-0.04em] text-[var(--tf-ink)]" aria-label="TrustFolder home">
+          <Logo />
         </Link>
         <nav className="hidden items-center gap-8 text-[15px] text-[var(--tf-slate)] xl:flex">
           {NAV_LINKS.map(([label, href]) => {
@@ -70,11 +71,8 @@ export function SiteFooter() {
     <footer className="border-t border-[var(--tf-border)] bg-[var(--tf-bg-soft)] px-6 py-16 sm:px-8 lg:px-12 2xl:px-16">
       <div className="mx-auto grid max-w-[1600px] gap-10 text-base text-[var(--tf-slate)] md:grid-cols-[1.1fr_0.9fr]">
         <div>
-          <Link
-            href="/"
-            className="font-semibold tracking-[-0.035em] text-[var(--tf-ink)]"
-          >
-            TrustFolder
+          <Link href="/" className="inline-flex text-[var(--tf-ink)]" aria-label="TrustFolder home">
+            <Logo />
           </Link>
           <p className="mt-4 max-w-3xl leading-8">
             TrustFolder prepares AI-generated governance evidence drafts for review. It is not
@@ -117,7 +115,7 @@ export function SiteChrome({
   active?: string;
 }) {
   return (
-    <div className="min-h-screen bg-[var(--tf-bg)] text-[var(--tf-ink)]">
+    <div className="tf-marketing tf-public-light min-h-screen bg-[var(--tf-bg)] text-[var(--tf-ink)]">
       <SiteHeader active={active} />
       <main>{children}</main>
       <SiteFooter />

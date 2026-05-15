@@ -348,7 +348,7 @@ export function EvidenceScene() {
     { label: 'Website URL', value: 'acme.ai', detail: 'Public claims scanned', delay: 0 },
     { label: 'AI scan', value: '4 signals', detail: 'Disclosure areas found', delay: 0.3 },
     { label: 'Review summary', value: 'Fit likely', detail: 'Founder confirms details', delay: 0.6 },
-    { label: 'Evidence folder', value: '8 docs', detail: 'Prepared for review', delay: 0.9 },
+    { label: 'Evidence folder', value: 'Artifact types', detail: 'Prepared for review', delay: 0.9 },
   ];
 
   return (

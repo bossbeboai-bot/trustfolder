@@ -7,12 +7,11 @@ import { docLabels, remotionColors } from '../constants';
 export function FolderBuildScene({ start }: { start: number }) {
   const frame = useCurrentFrame();
   const local = frame - start;
-  const count = Math.min(8, Math.max(2, Math.floor(local / 11)));
 
   return (
     <div style={{ position: 'relative', height: '100%' }}>
       <div style={{ position: 'absolute', left: 64, top: 42 }}>
-        <SceneLabel label="Evidence folder" value={`${count}/8 ready`} />
+        <SceneLabel label="Evidence folder" value="Artifact types ready" />
       </div>
       <div style={{ position: 'absolute', left: 82, top: 190 }}>
         <FolderMark size={170} />
@@ -61,4 +60,3 @@ export function FolderBuildScene({ start }: { start: number }) {
     </div>
   );
 }
-

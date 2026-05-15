@@ -19,6 +19,7 @@ export function DocumentPreviewPlayer() {
           compositionWidth={DOCUMENT_PREVIEW_WIDTH}
           compositionHeight={DOCUMENT_PREVIEW_HEIGHT}
           fps={DOCUMENT_PREVIEW_FPS}
+          initialFrame={250}
           controls
           acknowledgeRemotionLicense
           numberOfSharedAudioTags={0}

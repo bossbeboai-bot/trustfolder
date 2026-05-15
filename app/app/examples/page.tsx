@@ -6,7 +6,7 @@ import { buildPageMetadata } from '@/lib/seo';
 export const metadata: Metadata = buildPageMetadata({
   title: 'Sample AI Governance Documents and Disclosure Drafts',
   description:
-    'Sample AI governance documents, AI disclosure drafts, evidence trackers, and buyer handoff previews for TrustFolder packs.',
+    'Sample AI governance documents, AI disclosure drafts, evidence trackers, buyer handoff materials, and an illustrative buyer-review packet from TrustFolder.',
   path: '/examples',
 });
 

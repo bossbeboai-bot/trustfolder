@@ -2,7 +2,7 @@
 
 /**
  * ScanPipeline — hero visual representing:
- *   website URL → scan → assembled folder with 8/8 documents
+ *   website URL -> scan -> assembled folder with source-traced artifact types
  *
  * Pure CSS + SVG, respects prefers-reduced-motion. Used as the hero
  * preview for Phase 1, and continues to act as a graceful fallback if
@@ -14,14 +14,14 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { EDITORIAL_EASE } from '../lib/motion';
 
 const DOC_LABELS = [
-  '01 AI DISCLOSURE DRAFT',
-  '02 AI USE SUMMARY',
-  '03 EVIDENCE TRACKER',
-  '04 GOVERNANCE SUMMARY',
-  '05 BUYER HANDOFF',
-  '06 SOURCE NOTES',
-  '07 READINESS ROADMAP',
-  '08 EU AI ACT NOTES',
+  'AI DISCLOSURE DRAFT',
+  'AI USE SUMMARY',
+  'EVIDENCE TRACKER',
+  'GOVERNANCE SUMMARY',
+  'BUYER HANDOFF',
+  'SOURCE NOTES',
+  'READINESS ROADMAP',
+  'EU AI ACT NOTES',
 ];
 
 export function ScanPipeline() {
@@ -73,9 +73,9 @@ export function ScanPipeline() {
           <AnimatedLine delay={0.6}>✓ Disclosure gaps flagged</AnimatedLine>
         </div>
 
-        {/* Building pack counter */}
+        {/* Building pack status */}
         <div className="absolute right-5 top-5 rounded-sm border border-[color:var(--m-border-mid)] bg-[color:var(--m-white)] px-2.5 py-1 font-mono text-[10px] tracking-wideish text-[color:var(--m-muted)]">
-          Building pack · <span className="text-[color:var(--m-green)]">{Math.min(8, scene + 3)}/8</span>
+          Building pack - <span className="text-[color:var(--m-green)]">artifact types</span>
         </div>
 
         {/* Folder with documents stacking in */}

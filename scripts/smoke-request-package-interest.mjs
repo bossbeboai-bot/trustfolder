@@ -14,7 +14,7 @@ const CASES = [
   ['security-questionnaire', 'Enterprise Security Questionnaire Support'],
   ['gdpr-ai-data-readiness', 'GDPR AI/Data Readiness Pack'],
   ['dpa-privacy-handoff', 'DPA / Privacy Agreement Handoff Pack'],
-  ['iso42001-readiness', 'ISO 42001 Readiness Pack'],
+  ['iso42001-readiness', 'ISO/IEC 42001-Aligned Readiness Pack'],
   ['hipaa-healthcare-intake', 'HIPAA / Healthcare Data Intake Pack'],
   ['medical-ai-intake', 'Medical AI Expert-Review Intake'],
   ['employment-ai-intake', 'Hiring AI Expert-Review Intake'],
