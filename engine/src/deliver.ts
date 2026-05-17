@@ -205,28 +205,30 @@ function renderDeliveryHtml(input: DeliverPackInput): string {
     day: 'numeric',
   });
   return `
-  <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#0f172a;line-height:1.5">
-    <p>Your <strong>${escapeHtml(input.tier_label)}</strong> for <strong>${escapeHtml(input.company_name)}</strong> is ready.</p>
+  <div style="font-family:system-ui,sans-serif;max-width:620px;margin:0 auto;color:#09231b;line-height:1.55;background:#fbfaf6;padding:28px;border:1px solid #ded8ca;border-radius:18px">
+    <p style="margin:0 0 10px;color:#0f7b5a;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">TrustFolder delivery</p>
+    <h1 style="margin:0 0 14px;font-size:28px;line-height:1.1;color:#09231b">Your ${escapeHtml(input.tier_label)} is ready.</h1>
+    <p style="margin:0;color:#4f5d56">The branded customer package for <strong>${escapeHtml(input.company_name)}</strong> is ready to download. Open <code>START-HERE.html</code> first.</p>
 
     <div style="margin:24px 0;text-align:center">
-      <a href="${input.pack.signed_url}" style="display:inline-block;background:#0f172a;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:600">Download your pack (.zip)</a>
+      <a href="${input.pack.signed_url}" style="display:inline-block;background:#0f7b5a;color:#fff;padding:13px 24px;text-decoration:none;border-radius:999px;font-weight:700">Download customer package (.zip)</a>
     </div>
 
-    <p style="font-size:14px;color:#475569">The download link is valid until <strong>${expires}</strong>.</p>
+    <p style="font-size:14px;color:#5e6b64">The download link is valid until <strong>${expires}</strong>.</p>
 
-    <h3 style="margin-top:32px">What's inside</h3>
-    <p style="font-size:14px">${input.pack.doc_count} documents, organized into a Notion-importable folder. Open <code>README.md</code> first.</p>
+    <h3 style="margin-top:30px;margin-bottom:8px;color:#09231b">What's inside</h3>
+    <p style="font-size:14px;color:#4f5d56">${input.pack.doc_count} files/artifacts in a branded TrustFolder download. Open <code>START-HERE.html</code> first.</p>
 
-    <h3 style="margin-top:32px">What to do next</h3>
-    <ol style="font-size:14px">
-      <li>Read <code>README.md</code> for an overview (5 min)</li>
-      <li>Open <code>next-steps-roadmap.md</code> for the 30-day plan</li>
-      <li>For Tier 3 packs, start with <code>04-buyer-legal-handoff/02-09-lawyer-handoff-pack.md</code> — it briefs your lawyer in 1–2 pages</li>
-      <li>Apply the disclosure drafts to your product UI before public launch</li>
+    <h3 style="margin-top:30px;margin-bottom:8px;color:#09231b">What to do next</h3>
+    <ol style="font-size:14px;color:#4f5d56">
+      <li>Open <code>START-HERE.html</code> for the guided first view.</li>
+      <li>Review the main HTML report or buyer packet before forwarding it.</li>
+      <li>Check QA, source notes, and open review items before external use.</li>
+      <li>Share with qualified counsel for legal-impact decisions.</li>
     </ol>
 
-    <p style="margin-top:32px;font-size:13px;color:#64748b">Need help? Reply to this email.</p>
-    <p style="margin-top:8px;font-size:13px;color:#64748b">TrustFolder is an AI governance evidence folder, not a legal compliance guarantee. Always review with qualified legal counsel.</p>
+    <p style="margin-top:30px;font-size:13px;color:#5e6b64">Need help? Reply to this email.</p>
+    <p style="margin-top:8px;font-size:13px;color:#5e6b64">TrustFolder creates preparatory buyer-review evidence materials. It is not legal advice, certification, or a compliance guarantee.</p>
   </div>`;
 }
 
@@ -243,19 +245,19 @@ ${input.pack.signed_url}
 
 The download link is valid until ${expires}.
 
-What's inside: ${input.pack.doc_count} documents, organized into a Notion-importable folder. Open README.md first.
+What's inside: ${input.pack.doc_count} files/artifacts in a branded TrustFolder download. Open START-HERE.html first.
 
 What to do next:
-1. Read README.md for an overview (5 min)
-2. Open next-steps-roadmap.md for the 30-day plan
-3. For Tier 3 packs, start with 04-buyer-legal-handoff/02-09-lawyer-handoff-pack.md — it briefs your lawyer in 1-2 pages
-4. Apply the disclosure drafts to your product UI before public launch
+1. Open START-HERE.html for the guided first view.
+2. Review the main HTML report or buyer packet before forwarding it.
+3. Check QA, source notes, and open review items before external use.
+4. Share with qualified counsel for legal-impact decisions.
 
 Need help? Reply to this email.
 
-TrustFolder is an AI governance evidence folder, not a legal compliance guarantee. Always review with qualified legal counsel.
+TrustFolder creates preparatory buyer-review evidence materials. It is not legal advice, certification, or a compliance guarantee.
 
-— TrustFolder
+-- TrustFolder
 ${env.appBaseUrl()}`;
 }
 

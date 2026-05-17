@@ -56,7 +56,7 @@ export default function Page() {
         },
         {
           q: 'How long does this take?',
-          a: 'The free eligibility check is about two minutes. A paid pack is request-led and founder-reviewed; we reply within one business day.',
+          a: 'The free eligibility check is about two minutes. Snapshot, disclosure, and governance packs use checkout after fit is confirmed; premium handoff remains request-led.',
         },
       ]}
     />

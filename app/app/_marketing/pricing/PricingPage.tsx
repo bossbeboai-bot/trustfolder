@@ -29,19 +29,19 @@ const PACKS = [
     tier: 'Lite Readiness Snapshot',
     price: '$99',
     priceSuffix: 'one-time',
-    description: 'A short founder-prepared readiness snapshot for early-stage AI products.',
+    description: 'An autonomous branded readiness snapshot for early-stage AI products.',
     features: [
       { label: 'AI product eligibility scan', included: true },
       { label: 'Scope assessment report', included: true },
       { label: 'EU AI Act risk flag check', included: true },
-      { label: 'Readiness summary', included: true },
-      { label: 'Founder review before delivery', included: true },
+      { label: 'Readiness score + summary', included: true },
+      { label: 'Branded HTML + editable Markdown', included: true },
     ],
-    ctaLabel: 'Request snapshot',
-    ctaHref: '/request?type=snapshot',
+    ctaLabel: 'Run assessment for snapshot',
+    ctaHref: '/assessment',
     popular: false,
-    badge: 'Request-only',
-    note: 'Available on request.',
+    badge: 'Automated',
+    note: 'Secure PayPal checkout after the free fit check.',
   },
   {
     tier: 'AI Disclosure Pack',
@@ -125,7 +125,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What format are the documents?',
-    answer: 'Generated packs are delivered as downloadable files with editable source materials and a buyer-review packet. Snapshot and premium handoff requests are founder-reviewed before delivery.',
+    answer: 'Generated packs are delivered as downloadable files with editable source materials and a buyer-review packet where included. The Lite Snapshot, Disclosure Pack, and Governance Folder are automated after checkout; premium handoff remains founder-scoped and request-led.',
   },
 ];
 
@@ -144,7 +144,7 @@ export function PricingPage() {
             Choose the buyer-review evidence level after the free check
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-[color:var(--m-muted)]">
-            Start with a readiness check, then request a snapshot or continue to the pack that fits your buyer review moment.
+            Start with a readiness check, then choose the snapshot or evidence pack that fits your buyer review moment.
           </p>
         </div>
       </Reveal>

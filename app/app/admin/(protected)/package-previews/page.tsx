@@ -26,18 +26,18 @@ export default function AdminPackagePreviewsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-[var(--tf-ink)]">
-              Download the full preview bundle
+              Download the admin-only sample bundle
             </p>
             <p className="mt-1 text-sm text-[var(--tf-slate)]">
-              Includes the free result, $99 snapshot, $499 ZIP, $999 ZIP, premium handoff,
-              and request-only module previews.
+              Includes every pricing category as a sample for internal inspection. Real
+              customers receive only their purchased or requested package.
             </p>
           </div>
           <a
             href="/api/admin/package-previews/all"
             className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--tf-ink)] px-5 text-sm font-medium text-[var(--tf-on-light)] transition hover:bg-[var(--tf-ink-soft)]"
           >
-            Download all previews
+            Download admin bundle
           </a>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function AdminPackagePreviewsPage() {
                     {item.label}
                   </h2>
                 </div>
-                <StatusBadge label={item.outputKind} tone={OUTPUT_TONE[item.outputKind]} />
+                <StatusBadge label={item.readiness} tone={OUTPUT_TONE[item.outputKind]} />
               </div>
 
               <dl className="mt-5 space-y-4 text-sm">
@@ -94,7 +94,7 @@ export default function AdminPackagePreviewsPage() {
                 rel={item.outputKind === 'zip' ? undefined : 'noreferrer'}
                 className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--tf-border-strong)] bg-[var(--tf-surface)] px-4 text-sm font-medium text-[var(--tf-ink)] transition hover:bg-[var(--tf-bg-soft)]"
               >
-                {item.outputKind === 'zip' ? 'Download preview ZIP' : 'Open preview output'}
+                {item.outputKind === 'zip' ? 'Download sample ZIP' : 'Open sample output'}
               </a>
             </div>
           </AdminCard>

@@ -16,8 +16,8 @@ The generation pipeline. Eleven modules that take a customer's website URL + 8-1
 | `src/deliver.ts` | Resend transactional email with download link |
 | `src/paypal.ts` | Create order, capture, verify webhook signature |
 | `src/order-status.ts` | Status state machine (13 states, transition validation) |
-| `src/pipeline.ts` | Post-payment async orchestrator: classify → generate → qa → package → deliver |
-| `src/snapshot.ts` | **STUB** · Tier 1 Lite Readiness Snapshot generator (TODO before smoke test path B) |
+| `src/pipeline.ts` | Post-payment async orchestrator: classify -> tier-specific generation -> package -> deliver |
+| `src/snapshot.ts` | Tier 1 Lite Readiness Snapshot generator for the autonomous $99 path |
 
 Plus shared `lib/` (Supabase, Claude, Resend clients + types) and `prompts/` (4 system prompts).
 
@@ -26,7 +26,7 @@ Plus shared `lib/` (Supabase, Claude, Resend clients + types) and `prompts/` (4 
 | Tier identifier | Customer-facing name | Price | Engine handler |
 |---|---|---|---|
 | `tier_0` | Free Eligibility Check | $0 | `/api/scan` + `/api/confirm` (no docs) |
-| `tier_1` | Lite Readiness Snapshot | $99 | `snapshot.ts` (stub — TODO) |
+| `tier_1` | Lite Readiness Snapshot | $99 | `snapshot.ts` + `buildSnapshotPack` |
 | `tier_2` | Article 50 Disclosure Pack | $499 | `generate.ts` → `DISCLOSURE_DOCS` only |
 | `tier_3` | Full AI Governance Evidence Folder | $999 | `generate.ts` → `DISCLOSURE_DOCS + GOVERNANCE_DOCS` |
 | `tier_4` | Premium Buyer/Legal Handoff | $2.5-4.5k | Application-only (manual fulfillment) |

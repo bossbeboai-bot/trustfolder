@@ -38,25 +38,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 400 });
   }
   // Paid tiers in the automated checkout flow:
+  //   tier_1 ($99 snapshot)
   //   tier_2 ($499 disclosure pack)
   //   tier_3 ($999 full evidence folder)
-  //
   // tier_0 is free (no checkout). tier_4 is application-only (manual invoice).
-  // tier_1 (Lite Readiness Snapshot, $99) is intentionally NOT in instant
-  // checkout until `engine/src/snapshot.ts` is implemented — see
-  // `docs/24-implementation-gap-audit.md` §4.2. Until then, the snapshot
-  // is request-only via /request?type=snapshot.
-  if (body.tier === 'tier_1') {
-    return NextResponse.json(
-      {
-        error: 'tier_1_checkout_disabled',
-        detail:
-          'Snapshot checkout is not live yet. Please request a snapshot at /request?type=snapshot.',
-      },
-      { status: 400 },
-    );
-  }
-  const ALLOWED_TIERS: ReadonlyArray<string> = ['tier_2', 'tier_3'];
+  const ALLOWED_TIERS: ReadonlyArray<string> = ['tier_1', 'tier_2', 'tier_3'];
   if (!ALLOWED_TIERS.includes(body.tier)) {
     return NextResponse.json(
       { error: 'unsupported_tier', detail: `tier ${body.tier} not in checkout flow` },

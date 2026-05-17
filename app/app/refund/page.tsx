@@ -5,7 +5,7 @@ import { TextHero, TextPageBody, TextSection } from '../_marketing/components/Te
 export const metadata: Metadata = {
   title: 'Refund Policy',
   description:
-    'TrustFolder refund policy: request-led packs, digital service nature, pre and post-delivery rules, and how to contact support.',
+    'TrustFolder refund policy: automated packs, request-led premium work, digital service nature, pre and post-delivery rules, and how to contact support.',
 };
 
 export default function RefundPage() {
@@ -14,7 +14,7 @@ export default function RefundPage() {
       <TextHero
         eyebrow="Refunds"
         title="Refund Policy"
-        lede="A starter refund policy. TrustFolder is request-led and founder-reviewed for paid packs. Refund requests are reviewed case by case."
+        lede="A starter refund policy for automated packs and request-led premium work. Refund requests are reviewed case by case."
       />
 
       <TextPageBody>

@@ -13,7 +13,8 @@ export { scopeCheck } from './scope-check.js';
 export { classify } from './classify.js';
 export { generate } from './generate.js';
 export { qa } from './qa.js';
-export { buildPack } from './package.js';
+export { buildPack, buildSnapshotPack } from './package.js';
+export type { SnapshotPackageInput } from './package.js';
 export {
   deliverPack,
   sendOrderConfirmation,
@@ -63,3 +64,19 @@ export {
   buildBuyerReviewPacket,
 } from './buyer-review-packet.js';
 export type { BuyerReviewPacketInput } from './buyer-review-packet.js';
+export {
+  buildEvidenceRoomFiles,
+} from './evidence-room.js';
+export type {
+  ArtifactAudience,
+  EvidenceRoomArtifact,
+  EvidenceRoomBuild,
+  EvidenceRoomFile,
+  EvidenceRoomInput,
+  EvidenceRoomManifestTier,
+  EvidenceRoomQaResult,
+  EvidenceRoomTier,
+  ReviewStatus,
+  SourceCoverage,
+  TrustFolderPackManifest,
+} from './evidence-room.js';

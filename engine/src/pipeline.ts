@@ -2,44 +2,33 @@
  * Post-payment async pipeline.
  *
  * Tied to the `payment_completed` order status. Orchestrates:
- *   classify → generate → qa → (retry once on QA fail) → package → deliver
+ *   classify -> tier-specific generation -> package -> deliver
  *
- * Tier routing (per `docs/03-pricing-and-tiers.md`):
- *   tier_1 → snapshot path (single readiness report — see TODO note below)
- *   tier_2 → disclosure pack (full pipeline)
- *   tier_3 → full evidence folder (full pipeline)
- *   tier_0, tier_4 → not in the automated pipeline (handled out-of-band)
+ * Tier routing:
+ *   tier_1 -> autonomous Lite Readiness Snapshot
+ *   tier_2 -> AI Disclosure Pack
+ *   tier_3 -> Buyer-Ready Governance Folder
+ *   tier_0, tier_4 -> not in the automated pipeline
  *
- * Designed to be invoked from the PayPal webhook (fire-and-forget) or from
- * the admin retry endpoint. NEVER blocks the user on screen.
- *
- * Idempotency: first-run generation only starts when this function acquires
- * the payment_completed → generation_started transition. Replayed capture
- * paths, webhook replays, or return-page retries are no-ops once an order is
- * already preparing, packaged, delivered, failed, or refunded.
- *
- * TODO (smoke-test path B): build `engine/src/snapshot.ts` and route tier_1
- * orders to it from this orchestrator. Until then, tier_1 orders trip
- * `markFailed` here so the customer gets a calm "we're finishing your pack"
- * email rather than a silent stall.
+ * The $2,500+ premium handoff remains manual/request-led.
  */
 
-import { service, dbError } from './lib/supabase.js';
-import { transition, markFailed } from './order-status.js';
 import { classify } from './classify.js';
-import { generate } from './generate.js';
-import { qa } from './qa.js';
-import { buildPack } from './package.js';
 import { deliverPack, sendRetryNotice } from './deliver.js';
-import { tierLabel } from './paypal.js';
 import { env } from './lib/env.js';
+import { service, dbError } from './lib/supabase.js';
 import type {
-  ClassificationResult,
   GenerationContext,
   OrderRow,
   Result,
   ScopeCheckResult,
 } from './lib/types.js';
+import { markFailed, transition } from './order-status.js';
+import { buildPack, buildSnapshotPack } from './package.js';
+import { tierLabel } from './paypal.js';
+import { qa } from './qa.js';
+import { generate } from './generate.js';
+import { runSnapshot } from './snapshot.js';
 
 // =============================================================================
 // Public API
@@ -63,7 +52,7 @@ export interface RunPipelineOutput {
 export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPipelineOutput>> {
   const sb = service();
 
-  // 1. Read order
+  // 1. Read order.
   const { data: order, error } = await sb
     .from('orders')
     .select('*')
@@ -92,7 +81,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     };
   }
 
-  // Determine generation_run
+  // Determine generation_run.
   const { data: existingGens } = await sb
     .from('generated_packs')
     .select('generation_run')
@@ -103,7 +92,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
   );
   const generationRun = input.is_retry || maxRun > 0 ? maxRun + 1 : 1;
 
-  // 2. Transition: payment_completed → generation_started
+  // 2. Transition: payment_completed -> generation_started.
   const t1 = await transition({
     order_id: o.id,
     to: 'generation_started',
@@ -112,8 +101,6 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     expected_from: input.is_retry ? undefined : 'payment_completed',
   });
   if (!t1.ok) {
-    // It might already have moved past payment_completed (retry case);
-    // for retry, force-set status.
     if (input.is_retry) {
       await transition({
         order_id: o.id,
@@ -127,22 +114,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     }
   }
 
-  // 2.5. Tier routing — reject tiers not handled by this orchestrator.
-  // tier_1 is intentionally rejected here until `snapshot.ts` is built.
-  if (o.tier === 'tier_1') {
-    await markFailed(
-      o.id,
-      'pipeline.tier_routing',
-      'tier_1_snapshot_module_not_implemented_yet',
-      { tier: o.tier, todo: 'engine/src/snapshot.ts' },
-    );
-    await sendRetryNotice({ order_id: o.id, to_email: o.email, reason: 'snapshot_pending' });
-    return {
-      ok: false,
-      error:
-        'tier_1_snapshot_not_implemented: pipeline must route to engine/src/snapshot.ts (see docs/10 §14 known-pending items)',
-    };
-  }
+  // 2.5. Tier routing: premium remains manual, free has no checkout.
   if (o.tier === 'tier_0' || o.tier === 'tier_4') {
     await markFailed(
       o.id,
@@ -152,7 +124,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     return { ok: false, error: `tier_not_in_automated_pipeline:${o.tier}` };
   }
 
-  // 3. Classify
+  // 3. Classify.
   const scope_check: ScopeCheckResult = {
     in_scope: o.scope_check_passed ?? true,
     band: o.scope_check_band ?? 'CLEAR',
@@ -173,7 +145,6 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     return { ok: false, error: `classify_failed:${cls.error}` };
   }
 
-  // 4. Generate
   const ctx: GenerationContext = {
     order_id: o.id,
     company_name: cls.data.pack_metadata.company_name,
@@ -186,6 +157,16 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     governance_contact: o.email,
   };
 
+  if (o.tier === 'tier_1') {
+    return runSnapshotPipeline({
+      order: o,
+      scope_check,
+      ctx,
+      generationRun,
+    });
+  }
+
+  // 4. Generate.
   const gen = await generate({ context: ctx, tier: o.tier, generation_run: generationRun });
   if (!gen.ok || !gen.data) {
     await markFailed(o.id, 'pipeline.generate', gen.error ?? 'unknown');
@@ -193,7 +174,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     return { ok: false, error: `generate_failed:${gen.error}` };
   }
 
-  // 5. QA — transition to qa_started
+  // 5. QA.
   await transition({
     order_id: o.id,
     to: 'qa_started',
@@ -208,11 +189,10 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     return { ok: false, error: `qa_failed:${qaInitial.error}` };
   }
 
-  // Narrow once and use a non-optional alias from here on.
   let activeDocs = gen.data.docs;
   let activeQa = qaInitial.data;
 
-  // 6. QA-fail retry: regenerate ONCE if QA didn't pass on the first run
+  // 6. QA-fail retry: regenerate once if QA did not pass on first run.
   if (!activeQa.pass && generationRun === 1 && env.generationMaxRetries() > 0) {
     const retryRun = 2;
     const gen2 = await generate({ context: ctx, tier: o.tier, generation_run: retryRun });
@@ -236,7 +216,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     return { ok: false, error: 'qa_did_not_pass' };
   }
 
-  // 7. QA passed
+  // 7. QA passed.
   await transition({
     order_id: o.id,
     to: 'qa_passed',
@@ -244,8 +224,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     metadata: { score: activeQa.score },
   });
 
-  // 8. Package — Phase 8: pass intake/scope so readiness score + open review
-  // items + buyer review packet are computed inside the pack.
+  // 8. Package.
   const pkg = await buildPack({
     order_id: o.id,
     email: o.email,
@@ -253,6 +232,7 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     docs: activeDocs,
     company_name: cls.data.pack_metadata.company_name,
     generation_date: ctx.generation_date,
+    source_url: o.url,
     extraction: o.extraction_data,
     answers: o.questionnaire_data,
     scope: { in_scope: scope_check.in_scope, band: scope_check.band },
@@ -271,17 +251,9 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
     metadata: { storage_path: pkg.data.storage_path, doc_count: pkg.data.doc_count },
   });
 
-  // 9. Mark generated_at
-  try {
-    await sb
-      .from('orders')
-      .update({ generated_at: new Date().toISOString() })
-      .eq('id', o.id);
-  } catch (err) {
-    dbError('pipeline.markGenerated', err);
-  }
+  await markOrderGenerated(o.id, 'pipeline.markGenerated');
 
-  // 10. Deliver
+  // 10. Deliver.
   const del = await deliverPack({
     order_id: o.id,
     to_email: o.email,
@@ -312,4 +284,110 @@ export async function runPipeline(input: RunPipelineInput): Promise<Result<RunPi
       message: 'Pack delivered to customer',
     },
   };
+}
+
+interface SnapshotPipelineInput {
+  order: OrderRow;
+  scope_check: ScopeCheckResult;
+  ctx: GenerationContext;
+  generationRun: number;
+}
+
+async function runSnapshotPipeline(input: SnapshotPipelineInput): Promise<Result<RunPipelineOutput>> {
+  const { order: o, scope_check, ctx, generationRun } = input;
+
+  const snapshot = await runSnapshot({ context: ctx, scope_check });
+  if (!snapshot.ok || !snapshot.data) {
+    await markFailed(o.id, 'pipeline.snapshot', snapshot.error ?? 'unknown');
+    await sendRetryNotice({ order_id: o.id, to_email: o.email, reason: 'snapshot_failed' });
+    return { ok: false, error: `snapshot_failed:${snapshot.error}` };
+  }
+
+  await transition({
+    order_id: o.id,
+    to: 'qa_started',
+    actor: 'pipeline.snapshot',
+    metadata: {
+      generation_run: generationRun,
+      stage: 'snapshot_internal_qa',
+    },
+  });
+
+  await transition({
+    order_id: o.id,
+    to: 'qa_passed',
+    actor: 'pipeline.snapshot',
+    metadata: {
+      generation_run: generationRun,
+      readiness_score: snapshot.data.readiness_score.overall,
+      confidence_band: snapshot.data.confidence_band,
+    },
+  });
+
+  const pkg = await buildSnapshotPack({
+    order_id: o.id,
+    email: o.email,
+    company_name: ctx.company_name,
+    generation_date: ctx.generation_date,
+    source_url: o.url,
+    report_md: snapshot.data.report_md,
+    readiness_score: snapshot.data.readiness_score,
+    support_email: process.env.SUPPORT_EMAIL || 'support@trustfolder.com',
+  });
+  if (!pkg.ok || !pkg.data) {
+    await markFailed(o.id, 'pipeline.snapshot_package', pkg.error ?? 'unknown');
+    await sendRetryNotice({ order_id: o.id, to_email: o.email, reason: 'snapshot_package_failed' });
+    return { ok: false, error: `snapshot_package_failed:${pkg.error}` };
+  }
+
+  await transition({
+    order_id: o.id,
+    to: 'package_created',
+    actor: 'pipeline.snapshot',
+    metadata: { storage_path: pkg.data.storage_path, doc_count: pkg.data.doc_count },
+  });
+
+  await markOrderGenerated(o.id, 'pipeline.snapshot.markGenerated');
+
+  const del = await deliverPack({
+    order_id: o.id,
+    to_email: o.email,
+    company_name: ctx.company_name,
+    pack: pkg.data,
+    tier_label: tierLabel(o.tier),
+  });
+  if (!del.ok) {
+    await markFailed(o.id, 'pipeline.snapshot.deliver', del.error ?? 'unknown');
+    return { ok: false, error: `deliver_failed:${del.error}` };
+  }
+
+  await transition({
+    order_id: o.id,
+    to: 'delivered',
+    actor: 'pipeline.snapshot',
+    metadata: { email_id: del.data?.email_id },
+  });
+
+  return {
+    ok: true,
+    data: {
+      delivered: true,
+      generation_run: generationRun,
+      qa_score: snapshot.data.readiness_score.overall,
+      qa_pass: true,
+      doc_count: pkg.data.doc_count,
+      message: 'Snapshot delivered to customer',
+    },
+  };
+}
+
+async function markOrderGenerated(orderId: string, actor: string): Promise<void> {
+  try {
+    await service()
+      .from('orders')
+      .update({ generated_at: new Date().toISOString() })
+      .eq('id', orderId);
+  } catch (err) {
+    dbError(actor, err);
+  }
 }

@@ -27,8 +27,8 @@
  *   ├── next-steps-roadmap.md
  *   └── sources-and-notes.md
  *
- * tier_1 (Lite Readiness Snapshot) is delivered as a single .md/.pdf via
- * `snapshot.ts` — it does NOT pass through this packager.
+ * tier_1 (Lite Readiness Snapshot) uses `buildSnapshotPack` below to produce
+ * a branded ZIP with START-HERE.html, HTML report, Markdown, QA, and manifest.
  */
 
 import JSZip from 'jszip';
@@ -47,10 +47,9 @@ import type {
 import { computeReadinessScore, type ReadinessScore } from './readiness-score.js';
 import {
   buildOpenReviewItems,
-  renderOpenReviewItemsMarkdown,
   type OpenReviewItem,
 } from './open-review-items.js';
-import { buildBuyerReviewPacket } from './buyer-review-packet.js';
+import { buildEvidenceRoomFiles } from './evidence-room.js';
 
 const SIGNED_URL_TTL = 7 * 24 * 60 * 60; // 7 days, can be overridden via env
 
@@ -66,12 +65,95 @@ export interface PackageInput {
   /** Generation context summary for the README header. */
   company_name: string;
   generation_date: string; // YYYY-MM-DD
+  source_url?: string | null;
   /** Phase 8 readiness inputs. Optional — if absent, no readiness score is included. */
   extraction?: ExtractionData | null;
   answers?: QuestionnaireAnswers | null;
   scope?: Pick<ScopeCheckResult, 'in_scope' | 'band'> | null;
   /** Support email surfaced in the buyer-review packet. */
   support_email?: string;
+}
+
+function markdownToHtml(markdown: string): string {
+  const lines = markdown.split(/\r?\n/);
+  const html: string[] = [];
+  let inList = false;
+
+  const closeList = () => {
+    if (inList) {
+      html.push('</ul>');
+      inList = false;
+    }
+  };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) {
+      closeList();
+      continue;
+    }
+    if (line === '---') {
+      closeList();
+      html.push('<hr />');
+      continue;
+    }
+    if (line.startsWith('### ')) {
+      closeList();
+      html.push(`<h3>${inlineMarkdown(line.slice(4))}</h3>`);
+      continue;
+    }
+    if (line.startsWith('## ')) {
+      closeList();
+      html.push(`<h2>${inlineMarkdown(line.slice(3))}</h2>`);
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      closeList();
+      html.push(`<h2>${inlineMarkdown(line.slice(2))}</h2>`);
+      continue;
+    }
+    if (line.startsWith('> ')) {
+      closeList();
+      html.push(`<blockquote>${inlineMarkdown(line.slice(2))}</blockquote>`);
+      continue;
+    }
+    if (line.startsWith('- ')) {
+      if (!inList) {
+        html.push('<ul>');
+        inList = true;
+      }
+      html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
+      continue;
+    }
+    closeList();
+    html.push(`<p>${inlineMarkdown(line)}</p>`);
+  }
+
+  closeList();
+  return html.join('\n');
+}
+
+function inlineMarkdown(value: string): string {
+  return escapeHtml(value)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function slugForPath(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48);
 }
 
 export async function buildPack(input: PackageInput): Promise<Result<PackagedPack>> {
@@ -83,8 +165,7 @@ export async function buildPack(input: PackageInput): Promise<Result<PackagedPac
   if (input.tier === 'tier_1') {
     return {
       ok: false,
-      error:
-        'tier_1_uses_snapshot_module: snapshot is delivered as a single .md/.pdf via deliver.ts, not via this packager',
+      error: 'tier_1_uses_snapshot_packager: call buildSnapshotPack instead of buildPack',
     };
   }
   if (input.tier === 'tier_0' || input.tier === 'tier_4') {
@@ -113,90 +194,20 @@ export async function buildPack(input: PackageInput): Promise<Result<PackagedPac
     : [];
 
   const zip = new JSZip();
-
-  // Customer-facing top-level README
-  zip.file('README.md', renderTopReadme(input, okDocs, readiness, openItems));
-
-  // Layout depends on tier
-  if (input.tier === 'tier_2') {
-    // Tier 2 — Article 50 Disclosure Pack: flat disclosures folder + placement guide + legal note
-    for (const doc of okDocs) {
-      if (doc.template_id === 't1-06-ai-system-disclosure-page') {
-        zip.file('placement-guide.md', doc.content_md);
-      } else if (doc.template_id === 't1-07-ai-usage-policy-summary') {
-        zip.file('legal-review-note.md', doc.content_md);
-      } else if (doc.template_id.startsWith('t1-')) {
-        zip.file(`disclosures/${doc.filename}`, doc.content_md);
-      }
-      // governance docs (t2-*) are not included in tier_2
-    }
-  } else {
-    // Tier 3 — Full AI Governance Evidence Folder: 4-folder organized structure
-    for (const doc of okDocs) {
-      const folder = folderForTier3(doc.template_id);
-      zip.file(`${folder}/${doc.filename}`, doc.content_md);
-    }
-    // Consolidated sources-and-notes file
-    zip.file('sources-and-notes.md', renderSourcesAndNotes(input, okDocs));
+  const evidenceRoom = buildEvidenceRoomFiles({
+    tier: input.tier,
+    companyName: input.company_name,
+    generationDate: input.generation_date,
+    sourceUrl: input.source_url ?? null,
+    docs: okDocs,
+    readiness,
+    openItems,
+    supportEmail: input.support_email ?? 'support@trustfolder.com',
+  });
+  const root = zip.folder(evidenceRoom.rootFolderName);
+  for (const file of evidenceRoom.files) {
+    root?.file(file.path, file.content);
   }
-
-  // 30-day next-steps roadmap (Tier 2: weeks 1-2 only; Tier 3: full 4 weeks)
-  zip.file('next-steps-roadmap.md', renderNextStepsRoadmap(input, openItems));
-
-  // Phase 8 — open review items file (always written so the format is stable
-  // for downstream tooling; when items is empty, the markdown shows that).
-  zip.file('open-review-items.md', renderOpenReviewItemsMarkdown(openItems));
-
-  // Phase 8 — buyer review packet (markdown + printable HTML).
-  if (readiness !== null || okDocs.length > 0) {
-    const packet = buildBuyerReviewPacket({
-      company_name: input.company_name,
-      generation_date: input.generation_date,
-      tier: input.tier,
-      docs: okDocs,
-      readiness,
-      open_items: openItems,
-      support_email: input.support_email ?? 'support@trustfolder.com',
-    });
-    zip.file('buyer-review-packet.md', packet.markdown);
-    zip.file('buyer-review-packet.html', packet.html);
-  }
-
-  // Add a manifest.json for machine-readable consumers (Notion automations etc.)
-  zip.file(
-    'manifest.json',
-    JSON.stringify(
-      {
-        company: input.company_name,
-        generated_at: input.generation_date,
-        tier: input.tier,
-        tier_label: tierLabel(input.tier),
-        documents: okDocs.map((d) => ({
-          template_id: d.template_id,
-          filename: d.filename,
-          confidence_band: d.confidence_band,
-          citations: d.citations,
-          sources: {
-            website_pages: d.citations,
-            user_confirmed_answers_used: true,
-            system_inferred_signals_used: true,
-            confidence_band: d.confidence_band,
-            needs_human_review:
-              d.confidence_band === 'REVIEW' ||
-              d.confidence_band === 'UNCERTAIN' ||
-              d.confidence_band === 'SOFT_OUT' ||
-              d.confidence_band === 'HARD_OUT',
-          },
-        })),
-        readiness_score: readiness,
-        open_review_items: openItems,
-        generator: 'TrustFolder v0.1',
-        buyer_review_packet_present: true,
-      },
-      null,
-      2,
-    ),
-  );
 
   const buffer = await zip.generateAsync({
     type: 'nodebuffer',
@@ -227,7 +238,7 @@ export async function buildPack(input: PackageInput): Promise<Result<PackagedPac
   const { data: urlData, error: urlErr } = await sb.storage
     .from(bucket)
     .createSignedUrl(objectPath, ttl, {
-      download: `trustfolder-pack-${input.generation_date}.zip`,
+      download: `${evidenceRoom.rootFolderName}.zip`,
     });
   if (urlErr || !urlData?.signedUrl) {
     return { ok: false, error: `signed_url_failed: ${urlErr?.message ?? 'no_url'}` };
@@ -259,6 +270,286 @@ export async function buildPack(input: PackageInput): Promise<Result<PackagedPac
       doc_count: okDocs.length,
     },
   };
+}
+
+export interface SnapshotPackageInput {
+  order_id: string;
+  email: string;
+  company_name: string;
+  generation_date: string;
+  source_url?: string | null;
+  report_md: string;
+  readiness_score: ReadinessScore;
+  support_email?: string;
+}
+
+export async function buildSnapshotPack(input: SnapshotPackageInput): Promise<Result<PackagedPack>> {
+  const zip = new JSZip();
+  const rootFolderName = `TrustFolder Lite Readiness Snapshot - ${input.company_name} - ${input.generation_date}`;
+  const root = zip.folder(rootFolderName);
+  const files = [
+    {
+      path: 'START-HERE.html',
+      content: renderSnapshotStartHereHtml(input),
+    },
+    {
+      path: 'TrustFolder Lite Readiness Snapshot.html',
+      content: renderSnapshotReportHtml(input),
+    },
+    {
+      path: 'lite-readiness-snapshot.md',
+      content: input.report_md,
+    },
+    {
+      path: 'snapshot-qa-report.md',
+      content: renderSnapshotQaReport(input),
+    },
+    {
+      path: 'manifest.json',
+      content: JSON.stringify(
+        {
+          packId: `tf-snapshot-${slugForPath(input.company_name)}-${input.generation_date}`,
+          tier: 'snapshot',
+          companyName: input.company_name,
+          generatedAt: input.generation_date,
+          sourceUrl: input.source_url ?? null,
+          artifacts: [
+            {
+              path: 'TrustFolder Lite Readiness Snapshot.html',
+              title: 'Lite Readiness Snapshot',
+              category: 'snapshot',
+              audience: 'founder',
+              sourceCoverage: input.source_url ? 'partial' : 'needs-review',
+              reviewStatus: 'review-needed',
+            },
+            {
+              path: 'lite-readiness-snapshot.md',
+              title: 'Editable Snapshot Markdown',
+              category: 'snapshot',
+              audience: 'operator',
+              sourceCoverage: input.source_url ? 'partial' : 'needs-review',
+              reviewStatus: 'review-needed',
+            },
+          ],
+          readiness_score: input.readiness_score,
+          disclaimers: [
+            'Not legal advice.',
+            'Not certification.',
+            'Not a compliance guarantee.',
+            'Not a complete regulatory filing.',
+          ],
+        },
+        null,
+        2,
+      ),
+    },
+  ];
+
+  for (const file of files) {
+    root?.file(file.path, file.content);
+  }
+
+  const buffer = await zip.generateAsync({
+    type: 'nodebuffer',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 6 },
+  });
+
+  const sb = service();
+  const bucket = env.supabaseStorageBucket();
+  const objectPath = `orders/${input.order_id}/trustfolder-lite-readiness-snapshot-${input.generation_date}.zip`;
+
+  try {
+    const { error: upErr } = await sb.storage
+      .from(bucket)
+      .upload(objectPath, buffer, {
+        contentType: 'application/zip',
+        upsert: true,
+      });
+    if (upErr) {
+      return { ok: false, error: `storage_upload_failed: ${upErr.message}` };
+    }
+  } catch (err) {
+    return { ok: false, error: `storage_upload_threw: ${err instanceof Error ? err.message : String(err)}` };
+  }
+
+  const ttl = env.signedUrlTtlSeconds() || SIGNED_URL_TTL;
+  const { data: urlData, error: urlErr } = await sb.storage
+    .from(bucket)
+    .createSignedUrl(objectPath, ttl, {
+      download: `${rootFolderName}.zip`,
+    });
+  if (urlErr || !urlData?.signedUrl) {
+    return { ok: false, error: `signed_url_failed: ${urlErr?.message ?? 'no_url'}` };
+  }
+
+  const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+
+  try {
+    await sb
+      .from('orders')
+      .update({
+        signed_download_url: urlData.signedUrl,
+        signed_url_expires_at: expiresAt,
+      })
+      .eq('id', input.order_id);
+  } catch (err) {
+    dbError('snapshot.persistOrder', err);
+  }
+
+  return {
+    ok: true,
+    data: {
+      order_id: input.order_id,
+      storage_path: objectPath,
+      zip_size_bytes: buffer.byteLength,
+      signed_url: urlData.signedUrl,
+      signed_url_expires_at: expiresAt,
+      doc_count: files.length,
+    },
+  };
+}
+
+function renderSnapshotStartHereHtml(input: SnapshotPackageInput): string {
+  const score = `${input.readiness_score.overall} / 100`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${escapeHtml(input.company_name)} - TrustFolder Lite Readiness Snapshot</title>
+<style>
+:root { color-scheme: light; --ink:#09231b; --muted:#5e6b64; --line:#ded8ca; --cream:#fbfaf6; --paper:#fffdf7; --green:#0f7b5a; --deep:#063d2f; --soft:#e7f3ed; --gold:#b89555; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--cream); color:var(--ink); font-family:Arial,sans-serif; line-height:1.55; }
+main { max-width:980px; margin:0 auto; padding:44px 28px 64px; }
+.cover { border:1px solid var(--line); background:linear-gradient(135deg,#fffdf7 0%,#f4f0e7 100%); border-radius:28px; padding:40px; box-shadow:0 28px 80px rgba(9,35,27,.08); }
+.brand { display:flex; justify-content:space-between; gap:16px; margin-bottom:46px; }
+.mark { font-weight:800; color:var(--deep); }
+.eyebrow { color:var(--green); font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:800; }
+h1 { max-width:760px; margin:12px 0 18px; font-size:clamp(36px,6vw,64px); line-height:.98; letter-spacing:-.045em; }
+.lead { max-width:720px; color:var(--muted); font-size:18px; }
+.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:32px; }
+.card { border:1px solid var(--line); background:rgba(255,255,255,.8); border-radius:16px; padding:18px; }
+.metric { font-size:30px; font-weight:800; letter-spacing:-.03em; }
+.label { color:var(--muted); font-size:13px; }
+.section { margin-top:24px; border:1px solid var(--line); border-radius:20px; background:white; padding:24px; }
+li { margin:10px 0; }
+footer { margin-top:30px; color:var(--muted); font-size:13px; }
+@page { margin:18mm; }
+@media print { body{background:white;} main{padding:0;max-width:none;} .cover,.section{box-shadow:none;break-inside:avoid;border-radius:0;} }
+@media (max-width:720px){ main{padding:24px 16px;} .cover{padding:26px;} .grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<main>
+<section class="cover">
+<div class="brand"><div class="mark">TrustFolder</div><div class="eyebrow">$99 autonomous snapshot</div></div>
+<p class="eyebrow">Lite Readiness Snapshot</p>
+<h1>${escapeHtml(input.company_name)} AI governance readiness snapshot</h1>
+<p class="lead">A source-informed first diagnostic for the buyer-review questions your team should answer before an enterprise or legal review.</p>
+<section class="grid" aria-label="Snapshot summary">
+<div class="card"><div class="metric">${escapeHtml(score)}</div><div class="label">documentation readiness</div></div>
+<div class="card"><div class="metric">${escapeHtml(input.readiness_score.band_label)}</div><div class="label">readiness band</div></div>
+<div class="card"><div class="metric">4</div><div class="label">files included</div></div>
+</section>
+</section>
+<section class="section">
+<p class="eyebrow">Open first</p>
+<ol>
+<li>Open <strong>TrustFolder Lite Readiness Snapshot.html</strong> for the polished report.</li>
+<li>Use <strong>lite-readiness-snapshot.md</strong> as the editable working copy.</li>
+<li>Read <strong>snapshot-qa-report.md</strong> before sharing the report externally.</li>
+<li>Upgrade to the Disclosure Pack or Governance Folder when a buyer needs source-traced drafts and handoff materials.</li>
+</ol>
+</section>
+<section class="section">
+<p class="eyebrow">Safe boundary</p>
+<p>Not legal advice. Not certification. Not a compliance guarantee. Not a complete regulatory filing.</p>
+</section>
+<footer>Generated ${escapeHtml(input.generation_date)}. Source URL: ${escapeHtml(input.source_url ?? 'Not provided')}. Questions: ${escapeHtml(input.support_email ?? 'support@trustfolder.com')}.</footer>
+</main>
+</body>
+</html>`;
+}
+
+function renderSnapshotReportHtml(input: SnapshotPackageInput): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${escapeHtml(input.company_name)} - Lite Readiness Snapshot</title>
+<style>
+:root { color-scheme: light; --ink:#09231b; --muted:#5e6b64; --line:#ded8ca; --cream:#fbfaf6; --paper:#fffdf7; --green:#0f7b5a; --soft:#e7f3ed; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--cream); color:var(--ink); font-family:Arial,sans-serif; line-height:1.58; }
+main { max-width:920px; margin:0 auto; padding:42px 28px 64px; }
+header { border:1px solid var(--line); background:var(--paper); border-radius:24px; padding:34px; }
+.eyebrow { color:var(--green); font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:800; }
+h1 { margin:12px 0 10px; font-size:clamp(34px,5vw,58px); line-height:1; letter-spacing:-.045em; }
+.score { display:inline-flex; margin-top:20px; align-items:baseline; gap:10px; border:1px solid var(--line); border-radius:16px; background:white; padding:14px 18px; }
+.score strong { font-size:32px; }
+article { margin-top:24px; border:1px solid var(--line); background:white; border-radius:20px; padding:28px; }
+h2 { margin:28px 0 10px; font-size:24px; letter-spacing:-.03em; }
+h3 { margin:22px 0 8px; font-size:18px; }
+p, li { color:var(--muted); }
+blockquote { margin:16px 0; padding:14px 18px; border-left:4px solid var(--green); background:var(--soft); color:var(--ink); }
+code { background:#f3efe5; padding:2px 5px; border-radius:5px; }
+hr { border:0; border-top:1px solid var(--line); margin:26px 0; }
+@page { margin:18mm; }
+@media print { body{background:white;} main{padding:0;max-width:none;} header,article{break-inside:avoid;border-radius:0;} }
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">TrustFolder Lite Readiness Snapshot</p>
+<h1>${escapeHtml(input.company_name)} readiness report</h1>
+<p>This report is a founder-friendly first diagnostic for AI transparency and buyer-review readiness.</p>
+<div class="score"><strong>${input.readiness_score.overall}/100</strong><span>${escapeHtml(input.readiness_score.band_label)}</span></div>
+</header>
+<article>
+${markdownToHtml(input.report_md)}
+</article>
+</main>
+</body>
+</html>`;
+}
+
+function renderSnapshotQaReport(input: SnapshotPackageInput): string {
+  const banned = [
+    'fully compliant',
+    'guaranteed compliance',
+    'audit-proof',
+    'no lawyer needed',
+    'GDPR Article 50',
+    'final EU declaration of conformity',
+  ].filter((phrase) => input.report_md.toLowerCase().includes(phrase.toLowerCase()));
+
+  return [
+    `# Snapshot QA Report - ${input.company_name}`,
+    '',
+    `Generated: ${input.generation_date}`,
+    `Source URL: ${input.source_url ?? 'Not provided'}`,
+    '',
+    '## Automated checks',
+    '',
+    `- Banned claims found: ${banned.length === 0 ? 'None' : banned.join(', ')}`,
+    `- Readiness score included: ${input.readiness_score.overall}/100`,
+    '- Scope boundary present: yes',
+    '- Customer receives only the snapshot package for this tier.',
+    '',
+    '## Manual review still required',
+    '',
+    '- Product/factual accuracy.',
+    '- Personal-data and vendor/model claims.',
+    '- Legal interpretation.',
+    '- Any high-risk or sensitive-use applicability.',
+    '',
+    'Not legal advice. Not certification. Not a compliance guarantee. Not a complete regulatory filing.',
+    '',
+  ].join('\n');
 }
 
 // =============================================================================

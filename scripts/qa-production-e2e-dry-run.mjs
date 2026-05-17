@@ -9,7 +9,7 @@
 //   - GETs /assessment, /pricing, /request, /examples, /safety
 //   - Checks /dashboard requires auth (302/401)
 //   - Checks /admin requires auth (302/401)
-//   - Confirms /api/paypal/create-order rejects tier_1 and unknown tiers
+//   - Confirms /api/paypal/create-order enables tier_1 and rejects unknown tiers
 //
 // What this script DOES NOT do:
 //   - Approve a real PayPal order (manual)
@@ -102,10 +102,10 @@ for (const path of ['/admin', '/admin/orders', '/admin/requests', '/admin/failur
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ assessment_id: 'phase7-dry-run', tier: 'tier_1' }),
   });
-  if (r.status === 400 && r.body?.error === 'tier_1_checkout_disabled') {
-    record('tier_1 checkout disabled', 'PASS');
+  if (r.status === 404 && r.body?.error === 'assessment_not_found') {
+    record('tier_1 checkout route enabled', 'PASS');
   } else {
-    record('tier_1 checkout disabled', 'FAIL', `status=${r.status} error=${r.body?.error ?? ''}`);
+    record('tier_1 checkout route enabled', 'FAIL', `status=${r.status} error=${r.body?.error ?? ''}`);
   }
 }
 {

@@ -492,7 +492,7 @@ const FAQ: ReadonlyArray<{ q: string; a: string }> = [
   },
   {
     q: 'What happens after I run the free check?',
-    a: 'You receive a fit summary and a recommended next step. If it is a fit, you can request a snapshot, disclosure pack, governance folder, or premium handoff.',
+    a: 'You receive a fit summary and a recommended next step. If it is a fit, you can choose the snapshot, disclosure pack, governance folder, or request a premium handoff.',
   },
   {
     q: 'What products are out of scope?',

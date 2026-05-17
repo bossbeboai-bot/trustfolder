@@ -23,7 +23,7 @@ export async function GET(
     return new NextResponse(toArrayBuffer(body), {
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': 'attachment; filename="trustfolder-all-package-previews.zip"',
+        'Content-Disposition': 'attachment; filename="trustfolder-admin-only-package-samples.zip"',
         'Cache-Control': 'no-store',
       },
     });

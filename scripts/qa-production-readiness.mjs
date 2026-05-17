@@ -14,7 +14,7 @@
 //      /legal, /sitemap.xml, /robots.txt
 //   2. Auth-gate smoke: /dashboard*, /admin*
 //   3. /api/health
-//   4. Tier guards: tier_1 disabled, unsupported tier rejected
+//   4. Tier guards: tier_1 checkout route enabled, unsupported tier rejected
 //   5. Env presence (without printing values) for engine/.env
 //   6. Forbidden phrase scan across public/docs/templates/engine sources
 //
@@ -120,8 +120,8 @@ console.log('--- /api/health ---');
 console.log('--- Tier guards ---');
 {
   const r = await postJson('/api/paypal/create-order', { assessment_id: 'p7-readiness', tier: 'tier_1' });
-  if (r.status === 400 && r.body?.error === 'tier_1_checkout_disabled') record('tier_1 disabled', 'PASS');
-  else record('tier_1 disabled', 'FAIL', `status=${r.status} error=${r.body?.error ?? ''}`);
+  if (r.status === 404 && r.body?.error === 'assessment_not_found') record('tier_1 checkout route enabled', 'PASS');
+  else record('tier_1 checkout route enabled', 'FAIL', `status=${r.status} error=${r.body?.error ?? ''}`);
 }
 {
   const r = await postJson('/api/paypal/create-order', { assessment_id: 'p7-readiness', tier: 'tier_42' });

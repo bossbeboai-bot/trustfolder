@@ -185,7 +185,7 @@ export function orderStatusLabel(status: string): string {
 
 const TIER_LABELS: Record<string, string> = {
   tier_0: 'Free Eligibility Check',
-  tier_1: 'AI Website Trust Snapshot',
+  tier_1: 'Lite Readiness Snapshot',
   tier_2: 'AI Disclosure Pack',
   tier_3: 'Buyer-Ready AI Governance Folder',
   tier_4: 'Premium Buyer Handoff',

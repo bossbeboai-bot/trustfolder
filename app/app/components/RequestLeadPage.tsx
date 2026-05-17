@@ -36,7 +36,7 @@ import {
 import { DocumentDictionary } from '../_marketing/components/DocumentDictionary';
 
 const options = {
-  snapshot: 'AI Website Trust Snapshot',
+  snapshot: 'Lite Readiness Snapshot support',
   disclosure: 'AI Disclosure Pack',
   governance: 'Buyer-Ready AI Governance Folder',
   premium: 'Enterprise Buyer Handoff',
@@ -59,7 +59,7 @@ type OptionKey = keyof typeof options;
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
 const PRICE_LABEL: Record<OptionKey, string> = {
-  snapshot: '$99 · founder-prepared snapshot',
+  snapshot: '$99 - automated after free check',
   disclosure: '$499 · disclosure pack',
   governance: '$999 · governance folder',
   premium: '$2,500+ · application only',
@@ -79,7 +79,7 @@ const PRICE_LABEL: Record<OptionKey, string> = {
 };
 
 const HEADLINE: Record<OptionKey, string> = {
-  snapshot: 'Request your AI Website Trust Snapshot.',
+  snapshot: 'Need help choosing the Lite Readiness Snapshot?',
   disclosure: 'Request your AI Disclosure Pack.',
   governance: 'Request your Buyer-Ready AI Governance Folder.',
   premium: 'Apply for the Enterprise Buyer Handoff.',
@@ -100,7 +100,7 @@ const HEADLINE: Record<OptionKey, string> = {
 
 const SUBHEAD: Record<OptionKey, string> = {
   snapshot:
-    'A short readiness snapshot prepared from your website and a few confirmation details. We review and reply within 1 business day.',
+    'The $99 Lite Readiness Snapshot is automated after the free readiness check. Use this request form only if you have a scope question before checkout.',
   disclosure:
     'Filled disclosure docs, placement guide, and legal-review note for your AI product. We review and reply with next steps within 1 business day.',
   governance:

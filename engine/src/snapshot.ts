@@ -1,12 +1,12 @@
 /**
  * Tier 1 - Lite Readiness Snapshot generator.
  *
- * Deterministic v1 renderer. `pipeline.ts` still does not route paid tier_1
- * orders through this module; the public product remains request-only. This
- * module exists so admin/internal previews can show the real shape of the
- * $99 snapshot without requiring checkout, email, or storage.
+ * Deterministic v1 renderer for the autonomous $99 snapshot path. The pipeline
+ * calls this after payment, then packages the branded HTML/Markdown report for
+ * delivery.
  */
 
+import { computeReadinessScore, type ReadinessScore } from './readiness-score.js';
 import type {
   ClassificationResult,
   ExtractionData,
@@ -32,6 +32,8 @@ export interface RunSnapshotOutput {
   report_pdf_bytes: Uint8Array | null;
   /** Confidence band surfaced in section 4 of the report. */
   confidence_band: ClassificationResult['overall_band'];
+  /** Directional AI documentation readiness score for the snapshot. */
+  readiness_score: ReadinessScore;
   /** API cost in cents. Deterministic v1 has no LLM cost. */
   api_cost_cents: number;
   /** Total wall-clock time. */
@@ -43,10 +45,17 @@ export async function runSnapshot(
 ): Promise<Result<RunSnapshotOutput>> {
   const started = Date.now();
   const { context, scope_check } = input;
+  const readiness = computeReadinessScore({
+    extraction: context.extraction,
+    answers: context.answers,
+    scope: scope_check,
+    citations_count: 0,
+  });
   const report_md = renderSnapshotMarkdown(
     context.extraction,
     context.classification,
     scope_check,
+    readiness,
     context.company_name,
     context.generation_date,
   );
@@ -57,6 +66,7 @@ export async function runSnapshot(
       report_md,
       report_pdf_bytes: null,
       confidence_band: context.classification.overall_band,
+      readiness_score: readiness,
       api_cost_cents: 0,
       duration_ms: Date.now() - started,
     },
@@ -67,6 +77,7 @@ export function renderSnapshotMarkdown(
   extraction: ExtractionData,
   classification: ClassificationResult,
   scope_check: ScopeCheckResult,
+  readiness: ReadinessScore,
   company_name: string,
   generation_date: string,
 ): string {
@@ -144,6 +155,12 @@ export function renderSnapshotMarkdown(
     '',
     '## 4. Simple readiness result',
     '',
+    `AI documentation readiness: **${readiness.overall}/100 - ${readiness.band_label}**.`,
+    '',
+    `${readiness.recommended_next_step}`,
+    '',
+    readiness.disclaimer,
+    '',
     `Overall confidence band: **${classification.overall_band}**.`,
     '',
     systems,
@@ -172,8 +189,6 @@ export function renderSnapshotMarkdown(
     '## Disclaimer',
     '',
     'This snapshot is for preparatory and informational use. It is not legal advice, not certification, and not a compliance guarantee. TrustFolder prepares source-traced drafts and review materials; final decisions belong with qualified counsel and your team.',
-    '',
-    '*Illustrative admin preview output may use fictional company data.*',
     '',
   ].join('\n');
 }

@@ -6,11 +6,10 @@
  * 4 visible steps: Website -> Confirm -> Review -> Request.
  * Backend contract is unchanged: POST /api/scan, POST /api/confirm.
  * Supported paid tiers create a PayPal checkout after the fit check. Snapshot
- * remains request-only until snapshot generation is implemented.
+ * now uses the same assessment-gated PayPal checkout path as tier_2/tier_3.
  */
 
 import { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { SiteChrome } from '../components/SiteChrome';
@@ -73,14 +72,14 @@ interface TierOption {
 const TIER_OPTIONS: Record<PaidTier, TierOption> = {
   tier_1: {
     id: 'tier_1',
-    name: 'AI Website Trust Snapshot',
+    name: 'Lite Readiness Snapshot',
     price: '$99',
-    tagline: 'A short readiness snapshot you can share internally.',
+    tagline: 'An autonomous branded snapshot you can share internally.',
     bullets: [
       'Website scan summary + AI product overview',
       'Likely disclosure areas, in plain English',
-      'Readiness result with confidence band',
-      'Recommended next steps + expert-review flags',
+      'Readiness score with confidence band',
+      'Branded HTML report + editable Markdown',
     ],
   },
   tier_2: {
@@ -201,7 +200,6 @@ function computeRiskFlags(args: {
 
 // ---------- main ----------
 export default function AssessmentPage() {
-  const router = useRouter();
   const [step, setStep] = useState<Step>('enter');
   const [scanStage, setScanStage] = useState(0);
   const [url, setUrl] = useState('');
@@ -315,17 +313,8 @@ export default function AssessmentPage() {
     }
   }
 
-  function tierToRequestType(t: PaidTier): 'snapshot' | 'disclosure' | 'governance' {
-    if (t === 'tier_1') return 'snapshot';
-    if (t === 'tier_2') return 'disclosure';
-    return 'governance';
-  }
   async function startCheckout() {
     if (!selectedTier) return;
-    if (selectedTier === 'tier_1') {
-      router.push(`/request?type=${tierToRequestType(selectedTier)}`);
-      return;
-    }
     if (!scanResp?.assessment_id) {
       setErrorMsg('Please restart the free check before checkout.');
       setStep('enter');
@@ -949,7 +938,7 @@ function Step3Review(props: {
           ))}
         </ul>
         <p className="mt-5 text-sm text-[var(--tf-slate-soft)]">
-          You’ll see all package options on the next screen. Supported paid packs use secure PayPal checkout after fit is confirmed.
+          You will see all package options on the next screen. Snapshot, disclosure, and governance packs use secure PayPal checkout after fit is confirmed.
         </p>
       </ReviewCard>
       <div className="mt-8 flex flex-wrap gap-3">
@@ -977,8 +966,7 @@ function Step3Review(props: {
         )}
       </div>
       <p className="mt-7 text-sm leading-7 text-[var(--tf-slate-soft)]">
-        No payment is taken on this review screen. Supported paid packs go to secure PayPal
-        checkout next; snapshot requests stay founder-reviewed.
+        No payment is taken on this review screen. Snapshot, disclosure, and governance packs go to secure PayPal checkout next.
       </p>
     </StepFrame>
   );
@@ -995,7 +983,7 @@ function Step4Result(props: {
 }) {
   const recommended = props.confirm.recommended_tier ?? 'tier_2';
   const orderedTiers: PaidTier[] = ['tier_1', 'tier_2', 'tier_3'];
-  const selectedUsesCheckout = props.selectedTier === 'tier_2' || props.selectedTier === 'tier_3';
+  const selectedUsesCheckout = ['tier_1', 'tier_2', 'tier_3'].includes(props.selectedTier);
   return (
     <StepFrame>
       <StepEyebrow>Step 4 · Next step</StepEyebrow>
@@ -1056,8 +1044,7 @@ function Step4Result(props: {
         </p>
       )}
       <p className="mt-6 rounded-2xl border border-[var(--tf-border)] bg-[var(--tf-bg-soft)] px-6 py-5 text-base leading-7 text-[var(--tf-ink-soft)]">
-        The snapshot is request-only. Disclosure Pack and Governance Folder use secure PayPal
-        checkout, and generation starts only after payment is confirmed.
+        Snapshot, Disclosure Pack, and Governance Folder use secure PayPal checkout. Generation starts only after payment is confirmed. Premium handoff remains request-led.
       </p>
       {props.error && <ErrorBanner message={props.error} />}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -1066,18 +1053,12 @@ function Step4Result(props: {
           disabled={props.submitting}
           className="inline-flex h-14 items-center justify-center rounded-full bg-[var(--tf-ink)] px-8 text-base font-medium text-[var(--tf-on-light)] shadow-[0_18px_60px_rgba(7,17,31,0.2)] transition hover:bg-[var(--tf-ink-soft)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {props.submitting
-            ? selectedUsesCheckout
-              ? 'Opening secure PayPal checkout...'
-              : 'Opening request...'
-            : selectedUsesCheckout
-              ? 'Start secure PayPal checkout →'
-              : 'Request snapshot →'}
+          {props.submitting ? 'Opening secure PayPal checkout...' : 'Start secure PayPal checkout ->'}
         </button>
         <p className="text-sm text-[var(--tf-slate-soft)]">
           {selectedUsesCheckout
             ? 'Payment confirmed before your evidence folder is prepared.'
-            : 'Request-only until snapshot generation is implemented.'}
+            : 'Choose a paid tier to continue.'}
         </p>
       </div>
     </StepFrame>

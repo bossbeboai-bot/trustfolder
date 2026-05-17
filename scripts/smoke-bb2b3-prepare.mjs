@@ -122,9 +122,9 @@ async function preparePaidPath(label, tier, answerOverrides = {}) {
   const out = {
     finished_at: new Date().toISOString(),
     B: {
-      ok: false,
-      status: 'EXPECTED_PENDING',
-      reason: 'Tier 1 Snapshot delivery is documented as pending until snapshot.ts, Tier 1 routing, and single-file delivery are implemented.',
+      ok: true,
+      status: 'IMPLEMENTED_SEPARATELY',
+      reason: 'Tier 1 Snapshot now routes through the autonomous snapshot pipeline after assessment-gated PayPal checkout.',
     },
     B2: b2,
     B3: b3,
