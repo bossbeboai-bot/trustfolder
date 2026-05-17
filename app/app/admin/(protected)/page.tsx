@@ -104,6 +104,12 @@ export default async function AdminOverviewPage() {
           value={summary.delivered_packs}
           href="/admin/orders"
         />
+        <SummaryCard
+          label="Package previews"
+          value="6"
+          hint="No-payment output samples"
+          href="/admin/package-previews"
+        />
       </div>
 
       <div className="mt-10">

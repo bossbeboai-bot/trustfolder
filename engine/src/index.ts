@@ -37,6 +37,11 @@ export {
 } from './paypal.js';
 export { transition, markFailed, STATUS_LABELS } from './order-status.js';
 export { runPipeline } from './pipeline.js';
+export {
+  runSnapshot,
+  renderSnapshotMarkdown,
+} from './snapshot.js';
+export type { RunSnapshotInput, RunSnapshotOutput } from './snapshot.js';
 export { computeReadinessScore } from './readiness-score.js';
 export type {
   ReadinessScore,

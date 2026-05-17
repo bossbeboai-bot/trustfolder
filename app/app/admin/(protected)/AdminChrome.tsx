@@ -8,6 +8,7 @@ const NAV: Array<{ label: string; href: string }> = [
   { label: 'Requests', href: '/admin/requests' },
   { label: 'Assessments', href: '/admin/assessments' },
   { label: 'Orders', href: '/admin/orders' },
+  { label: 'Previews', href: '/admin/package-previews' },
   { label: 'Failures', href: '/admin/failures' },
   { label: 'Out-of-scope', href: '/admin/out-of-scope' },
 ];
