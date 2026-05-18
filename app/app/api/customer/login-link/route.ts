@@ -121,11 +121,14 @@ export async function POST(req: Request) {
   });
 
   const linkUrl = `${originFromReq(req)}/api/customer/verify?t=${encodeURIComponent(token)}`;
-  // Best-effort send. The audit log is the source of truth.
-  void sendCustomerMagicLink({ to_email: profile.email, link_url: linkUrl }).catch((err) => {
+  // Best-effort send, but await it so serverless runtimes do not freeze the
+  // email after the response is returned. The audit log remains the source of
+  // truth and the public response stays generic.
+  const sent = await sendCustomerMagicLink({ to_email: profile.email, link_url: linkUrl });
+  if (!sent.ok) {
     // eslint-disable-next-line no-console
-    console.error('[customer/login-link] sendCustomerMagicLink', err);
-  });
+    console.error('[customer/login-link] sendCustomerMagicLink', sent.error);
+  }
 
   await logAuthEvent({
     email: profile.email,

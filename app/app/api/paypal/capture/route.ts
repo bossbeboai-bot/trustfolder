@@ -107,25 +107,35 @@ export async function POST(req: Request) {
     expected_from: 'payment_pending',
   });
 
-  // Send order-confirmation email (best-effort — does not block the response)
+  // Send order-confirmation email. Await it so serverless runtimes do not
+  // freeze the send after returning the response.
   if (moved.ok) {
-    void sendOrderConfirmation({
+    const confirmation = await sendOrderConfirmation({
       order_id: order.id,
       to_email: order.email,
       tier_label: tierLabel(order.tier),
       amount_cents: order.amount_cents,
       currency: order.currency,
     });
+    if (!confirmation.ok) {
+      console.error('[capture] sendOrderConfirmation failed', confirmation.error);
+    }
   }
 
-  // Fire-and-forget pipeline run. The user is redirected to /success and
-  // gets the pack via email.
+  // Run the delivery pipeline in-request. Vercel can freeze fire-and-forget
+  // work after the response, leaving paid orders stuck in payment_completed.
+  let pipelineOk: boolean | null = null;
   if (moved.ok) {
-    void runPipeline({ order_id: order.id }).catch((err) => {
-      // eslint-disable-next-line no-console
-      console.error('[capture] pipeline failed', err);
-    });
+    const pipeline = await runPipeline({ order_id: order.id });
+    pipelineOk = pipeline.ok;
+    if (!pipeline.ok) {
+      console.error('[capture] pipeline failed', pipeline.error);
+    }
   }
 
-  return NextResponse.json({ status: 'completed', already_processed: !moved.ok });
+  return NextResponse.json({
+    status: 'completed',
+    already_processed: !moved.ok,
+    pipeline_ok: pipelineOk,
+  });
 }

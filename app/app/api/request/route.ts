@@ -74,19 +74,20 @@ export async function POST(req: Request) {
   const row = inserted.data;
 
   // Best-effort acknowledgement email — never fail the form on this.
-  void sendRequestReceived({
+  const emailResult = await sendRequestReceived({
     request_id: row.id,
     to_email: row.email,
     package_interest: row.package_interest,
     website_url: row.website_url,
     company_name: row.company_name,
     message: row.message,
-  }).catch(() => {
-    /* swallowed */
   });
+  if (!emailResult.ok) {
+    console.error('[request] sendRequestReceived failed', emailResult.error);
+  }
 
   // Best-effort founder alert — never fail the form on this.
-  void notifyFounder({
+  await notifyFounder({
     severity: 'info',
     message: `New request: ${row.package_interest ?? 'unspecified'} (${row.email})`,
     context: {

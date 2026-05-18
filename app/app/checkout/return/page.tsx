@@ -66,20 +66,23 @@ export default async function CheckoutReturnPage({
       });
 
       if (moved.ok) {
-        void sendOrderConfirmation({
+        const confirmation = await sendOrderConfirmation({
           order_id: order!.id,
           to_email: order!.email,
           tier_label: tierLabel(order!.tier),
           amount_cents: order!.amount_cents,
           currency: order!.currency,
         });
+        if (!confirmation.ok) {
+          console.error('[checkout.return] sendOrderConfirmation failed', confirmation.error);
+        }
       }
 
       if (moved.ok) {
-        void runPipeline({ order_id: order!.id }).catch((err) => {
-          // eslint-disable-next-line no-console
-          console.error('[checkout.return] pipeline failed', err);
-        });
+        const pipeline = await runPipeline({ order_id: order!.id });
+        if (!pipeline.ok) {
+          console.error('[checkout.return] pipeline failed', pipeline.error);
+        }
       }
     }
   }

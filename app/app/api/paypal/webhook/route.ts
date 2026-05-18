@@ -112,26 +112,33 @@ export async function POST(req: Request) {
     });
 
     if (moved.ok) {
-      void sendOrderConfirmation({
+      const confirmation = await sendOrderConfirmation({
         order_id: order.id,
         to_email: order.email,
         tier_label: tierLabel(order.tier),
         amount_cents: order.amount_cents,
         currency: order.currency,
       });
+      if (!confirmation.ok) {
+        console.error('[webhook] sendOrderConfirmation failed', confirmation.error);
+      }
     }
 
-    // Fire-and-forget: pipeline runs in the background.
+    // Run the delivery pipeline in-request. Vercel can freeze fire-and-forget
+    // work after the response, leaving paid orders stuck in payment_completed.
+    let pipelineOk: boolean | null = null;
     if (moved.ok) {
-      void runPipeline({ order_id: order.id }).catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error('[webhook] pipeline failed', err);
-      });
+      const pipeline = await runPipeline({ order_id: order.id });
+      pipelineOk = pipeline.ok;
+      if (!pipeline.ok) {
+        console.error('[webhook] pipeline failed', pipeline.error);
+      }
     }
 
     return NextResponse.json({
       ok: true,
       status: moved.ok ? 'capture_recorded' : 'already_processed',
+      pipeline_ok: pipelineOk,
     });
   }
 
@@ -167,13 +174,16 @@ export async function POST(req: Request) {
       });
     }
 
-    void sendPaymentFailed({
+    const failedEmail = await sendPaymentFailed({
       order_id: order.id,
       to_email: order.email,
       reason: 'denied',
       tier_label: tierLabel(order.tier),
     });
-    void notifyFounder({
+    if (!failedEmail.ok) {
+      console.error('[webhook] sendPaymentFailed failed', failedEmail.error);
+    }
+    await notifyFounder({
       severity: 'warn',
       message: `PayPal capture denied for order ${order.id}`,
       context: {
@@ -219,13 +229,16 @@ export async function POST(req: Request) {
       });
     }
 
-    void sendPaymentFailed({
+    const failedEmail = await sendPaymentFailed({
       order_id: order.id,
       to_email: order.email,
       reason: isRefunded ? 'refunded' : 'reversed',
       tier_label: tierLabel(order.tier),
     });
-    void notifyFounder({
+    if (!failedEmail.ok) {
+      console.error('[webhook] sendPaymentFailed failed', failedEmail.error);
+    }
+    await notifyFounder({
       severity: isRefunded ? 'info' : 'warn',
       message: `PayPal capture ${isRefunded ? 'refunded' : 'reversed'} for order ${order.id}`,
       context: {
