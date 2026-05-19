@@ -18,11 +18,11 @@
 //   - Send a real customer email (use scripts/test-email-production.mjs)
 //
 // Usage:
-//   BASE_URL=https://yourdomain.com node scripts/qa-production-e2e-dry-run.mjs
-// Or against local:
 //   node scripts/qa-production-e2e-dry-run.mjs
+// Or against local:
+//   BASE_URL=http://localhost:3000 node scripts/qa-production-e2e-dry-run.mjs
 
-const BASE = (process.env.BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
+const BASE = (process.env.BASE_URL ?? 'https://trustfolder.vercel.app').replace(/\/+$/, '');
 const results = [];
 let allOk = true;
 
@@ -122,8 +122,9 @@ for (const path of ['/admin', '/admin/orders', '/admin/requests', '/admin/failur
 }
 
 // 5. Manual-only gates
-record('PayPal sandbox approval/capture tier_2', 'NOT_RUN_MANUAL_REQUIRED', 'see docs/43');
-record('PayPal sandbox approval/capture tier_3', 'NOT_RUN_MANUAL_REQUIRED', 'see docs/43');
+record('PayPal sandbox/live approval/capture tier_1', 'NOT_RUN_MANUAL_REQUIRED', 'see docs/43');
+record('PayPal sandbox/live approval/capture tier_2', 'NOT_RUN_MANUAL_REQUIRED', 'see docs/43');
+record('PayPal sandbox/live approval/capture tier_3', 'NOT_RUN_MANUAL_REQUIRED', 'see docs/43');
 record('Generation pipeline produces pack', 'NOT_RUN_MANUAL_REQUIRED', 'runs from PayPal capture webhook');
 record('Pack uploaded to deliveries bucket', 'NOT_RUN_MANUAL_REQUIRED', 'verify via Supabase storage');
 record('Customer dashboard download link', 'NOT_RUN_MANUAL_REQUIRED', 'verify with a known test account');

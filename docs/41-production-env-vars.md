@@ -2,7 +2,7 @@
 
 Status: Phase 7 reference  
 Pairs with: `app/.env.example`, `engine/.env.example`  
-Last updated: 2026-05-11
+Last updated: 2026-05-19
 
 This is the canonical list of production environment variables. Every
 variable must be set in Vercel's Production environment. None of these
@@ -62,9 +62,10 @@ guaranteed uptime).
 | `PAYPAL_BASE_URL` | optional | Override PayPal API host if needed |
 | `NEXT_PUBLIC_PAYPAL_CLIENT_ID` | yes | Same value as `PAYPAL_CLIENT_ID` (client-side use) |
 
-Allowed automated checkout tiers: `tier_2` ($499) and `tier_3` ($999).
-All other tiers and the new compliance-readiness modules are
-request-only / apply-only and do not hit `/api/paypal/create-order`.
+Allowed automated checkout tiers: `tier_1` ($99), `tier_2` ($499), and
+`tier_3` ($999). `tier_0` is free and never hits PayPal. `tier_4` and
+request-led compliance-readiness modules stay manual / application-only
+and do not hit `/api/paypal/create-order`.
 
 ## 6 · App / sessions
 
@@ -109,5 +110,7 @@ Run before launch:
 node scripts/qa-production-readiness.mjs
 ```
 
-The script verifies that env names exist (without printing values), and
-that no checked-in source file references forbidden literal phrases.
+The script defaults to `https://trustfolder.vercel.app`. Use
+`BASE_URL=http://localhost:3000` for a local server. It verifies route
+health, env names (without printing values), checkout tier guards, and
+that checked public surfaces do not contain forbidden literal phrases.

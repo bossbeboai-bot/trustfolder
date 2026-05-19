@@ -1,7 +1,7 @@
 # 47 — Production Go / No-Go
 
 Status: Phase 7 launch gate  
-Last updated: 2026-05-11
+Last updated: 2026-05-19
 
 This document is the single sheet of paper used to decide whether
 TrustFolder can run live 24/7. Each gate is binary: PASS or FAIL.
@@ -18,9 +18,11 @@ The launch is GO only if every gate is PASS.
 - [ ] **Resend test**: `node scripts/test-email-production.mjs --to
       <ADMIN_EMAIL>` returns `EMAIL_TEST_RESULT: GO` and the mail
       arrives.
-- [ ] **PayPal sandbox**: at least one full sandbox approval/capture
-      end-to-end test for `tier_2` and `tier_3` produced a delivered
-      pack.
+- [ ] **PayPal sandbox/live buyer flow**: at least one full approval/capture
+      end-to-end test for `tier_1`, `tier_2`, and `tier_3` produced a
+      delivered pack.
+- [ ] **Live delivery gates**: `node scripts/qa-live-delivery-gates.mjs`
+      returns `LIVE_DELIVERY_GATES_RESULT: GO`.
 - [ ] **Generation/delivery**: `node scripts/qa-production-e2e-dry-run.mjs`
       returns no `FAIL` (manual-only steps may show `NOT_RUN_MANUAL_REQUIRED`
       and they must be resolved by the sandbox capture above).
@@ -36,15 +38,15 @@ The launch is GO only if every gate is PASS.
       `guaranteed compliance`, `audit-proof`, `no lawyer needed`,
       `legal guarantee`, `certified`/`certification` outside the
       `not certification` disclaimer, `buy now`).
-- [ ] **Tier guards**: `/api/paypal/create-order` rejects `tier_1` and
-      any tier outside `tier_2`/`tier_3`.
+- [ ] **Tier guards**: `/api/paypal/create-order` accepts only `tier_1`,
+      `tier_2`, and `tier_3`; it rejects `tier_0`, `tier_4`, and unknown tiers.
 - [ ] **Support email**: a real human answers `SUPPORT_EMAIL`.
 
 ## 2 · NO-GO gates
 
 If any of the following is true, the launch is NO-GO:
 
-- PayPal sandbox approval/capture has not been done.
+- PayPal sandbox/live approval/capture has not been done for every automated tier.
 - Generation or delivery has not been tested end-to-end.
 - Email deliverability has not been verified.
 - Customer dashboard download is broken for a known test account.

@@ -423,7 +423,7 @@ Plan-only. Blocked on a later auth phase. All tabs are read-mostly in v1.
 | Connector data | — | — | yes |
 
 Auth model:
-- v1: passwordless magic-link to the email used during checkout. No password DB. Sessions on `customer_sessions` Supabase table.
+- v1: passwordless magic-link to the email used during checkout. No password DB. Current implementation uses `customer_profiles`, `customer_link_tokens`, and a signed `tf_customer` cookie rather than the older separate session-table design.
 - v2: password + magic-link, email change with double-confirm.
 - v3: workspace, multiple users, role permissions.
 

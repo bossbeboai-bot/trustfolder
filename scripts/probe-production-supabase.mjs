@@ -32,7 +32,7 @@ function parseEnv(path) {
     if (!line || line.startsWith('#')) continue;
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
     if (!m) continue;
-    out[m[1]] = m[2];
+    out[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
   }
   return out;
 }
@@ -100,7 +100,7 @@ const requestsInternalNote = await probe('column:requests.internal_note', `${tri
 const requestsUpdatedAt = await probe('column:requests.updated_at', `${trimmed}/rest/v1/requests?select=updated_at&limit=0`, { method: 'HEAD' });
 
 console.log('--- Migration 0004 customer auth tables ---');
-const customerTables = ['magic_links', 'customer_sessions'];
+const customerTables = ['customer_profiles', 'customer_link_tokens', 'customer_auth_events'];
 let customerFails = 0;
 for (const t of customerTables) {
   const r = await probe(`table:${t}`, `${trimmed}/rest/v1/${t}?select=id&limit=0`, { method: 'HEAD' });

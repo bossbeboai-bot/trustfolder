@@ -101,7 +101,7 @@ Items from docs 20–23 with no code in the repo at all.
 | 3.13 | `next-steps-roadmap.md` generator (Tier 2 + Tier 3 pack files) | `docs/22` §5 | **P0** | S | **Yes** (named in pack contract) |
 | 3.14 | Per-paragraph source-note inlining inside generated docs | `docs/22` §9 | P1 | M | No (consolidated `sources-and-notes.md` covers the trust story for v1) |
 | 3.15 | Customer dashboard `/dashboard/*` (any tab) | `docs/21` Part A | Later | L | No |
-| 3.16 | `customers` / `customer_sessions` / `customer_link_tokens` / `customer_auth_events` tables | `docs/21` §25 | Later | M | No |
+| 3.16 | `customer_profiles` / `customer_link_tokens` / `customer_auth_events` tables | `docs/21` §25 | Built | M | No |
 | 3.17 | Magic-link auth | `docs/21` §1 | Later | M | No |
 | 3.18 | Admin dashboard `/admin/*` (any tab) | `docs/21` Part B | Later | L | No |
 | 3.19 | `admin_users` / `admin_sessions` / `admin_audit_events` / `app_settings` tables | `docs/21` §25 | Later | M | No |
@@ -185,7 +185,7 @@ Everything in this section is gated on a deliberate auth phase decision. Do not 
 | Item | Doc reference | Priority | Effort |
 |---|---|---|---|
 | Magic-link auth (v1) | `docs/21` §1.1, §25 | Later | M |
-| `customers`, `customer_sessions`, `customer_link_tokens`, `customer_auth_events` tables | `docs/21` §25 | Later | M |
+| `customer_profiles`, `customer_link_tokens`, `customer_auth_events` tables | `docs/21` §25 | Built | M |
 | `/dashboard` Overview tab | `docs/21` §2 | Later | M |
 | `/dashboard/scan` | `docs/21` §3 | Later | M |
 | `/dashboard/pack`, `/disclosures`, `/governance`, `/risk`, `/sources`, `/downloads` | `docs/21` §§4–9 | Later | L (combined) |
@@ -335,7 +335,7 @@ Anchored to `docs/20` §2.
 ### 13.1.1 Documented compromises
 
 - **`order_status_t` still lacks `payment_failed`.** When PayPal capture is denied while `orders.status = payment_pending`, we transition to `failed_needs_retry` (closest legal transition). Past-payment_completed denials only append an `order_status_events` audit row and do not overwrite the status. The `/success/[orderId]` page reads `payment_status` alongside `status` and renders a distinct "Your payment did not complete / was reversed" copy when `payment_status` is `failed` or `refunded`. A future migration can add a dedicated `payment_failed` enum value; not required for launch.
-- **Tier 1 snapshot instant checkout remains disabled.** `engine/src/snapshot.ts` is still a stub. The `/api/paypal/create-order` endpoint rejects `tier_1` with a clear `tier_1_checkout_disabled` error and the assessment page routes Tier 1 selections to `/request?type=snapshot`. Customers can still ask for a snapshot via the request flow.
+- **Superseded as of 2026-05-19:** Tier 1 snapshot checkout is now enabled in `app/app/api/paypal/create-order/route.ts`, and the snapshot pipeline has been built into the paid delivery path. Use the current production runbooks rather than this historical compromise note.
 
 ### 13.2 Original P0 list (kept for traceability)
 

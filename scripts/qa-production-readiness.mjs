@@ -4,9 +4,9 @@
 // reported as PASS automatically.
 //
 // Usage:
-//   BASE_URL=https://yourdomain.com node scripts/qa-production-readiness.mjs
-// Or against local:
 //   node scripts/qa-production-readiness.mjs
+// Or against local:
+//   BASE_URL=http://localhost:3000 node scripts/qa-production-readiness.mjs
 //
 // What it does:
 //   1. Public route smoke: /, /pricing, /examples, /safety, /agencies,
@@ -29,7 +29,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, '..');
-const BASE = (process.env.BASE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
+const BASE = (process.env.BASE_URL ?? 'https://trustfolder.vercel.app').replace(/\/+$/, '');
 
 const results = [];
 let blocked = false;

@@ -45,7 +45,7 @@ Surface: `/dashboard/*` (all customer surface). Auth required. Dependent on the 
 ### 1.4 Identity model (v1)
 
 - `customers(id, email, created_at, last_login_at, status)`
-- `customer_sessions(id, customer_id, token_hash, expires_at, ip, ua)`
+- `customer_link_tokens(id, customer_id, token_hash, expires_at, used_at, ip, user_agent)`
 - `customer_link_tokens(id, customer_id, token_hash, expires_at, used_at)`
 
 ### 1.5 Cross-tab auth rules
@@ -211,7 +211,7 @@ Surface: `/dashboard/*` (all customer surface). Auth required. Dependent on the 
 - **Actions**:
   - Logout → invalidates session.
   - Email change request (v2) writes to `customer_email_change_requests` and emails the new address.
-- **Data source**: `customers`, `customer_sessions`.
+- **Data source**: `customer_profiles`, `customer_link_tokens`, `customer_auth_events`.
 
 ---
 
@@ -348,7 +348,7 @@ Surface: `/admin/*`. Auth required, with a separate `admin_sessions` table and I
 
 ```
 customers(id, email UNIQUE, created_at, last_login_at, status)
-customer_sessions(id, customer_id, token_hash, expires_at, ip, ua, created_at)
+customer_link_tokens(id, customer_id, token_hash, expires_at, used_at, ip, user_agent, created_at)
 customer_link_tokens(id, customer_id, token_hash, expires_at, used_at, created_at)
 customer_auth_events(id, customer_id, event, payload, created_at)
 customer_disclosure_status(id, customer_id, pack_id, file_path, status, updated_at)  -- v2

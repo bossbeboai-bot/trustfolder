@@ -29,7 +29,7 @@ function parseEnv(path) {
     if (!line || line.startsWith('#')) continue;
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
     if (!m) continue;
-    out[m[1]] = m[2];
+    out[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
   }
   return out;
 }
@@ -84,6 +84,8 @@ try {
     console.log('EMAIL_TEST_RESULT: GO');
     process.exit(0);
   }
+  const detail = await res.json().catch(() => null);
+  if (detail?.message) console.log('  resend error=' + detail.message);
   console.log('EMAIL_TEST_RESULT: BLOCKED');
   process.exit(2);
 } catch (err) {

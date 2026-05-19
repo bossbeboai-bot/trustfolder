@@ -2,7 +2,7 @@
 
 Status: Phase 7 master checklist  
 Scope: make the existing TrustFolder system run live 24/7 as an automated product. No new features, modules, providers, or compliance scope changes.  
-Last updated: 2026-05-11
+Last updated: 2026-05-19
 
 This doc is the entry point for Phase 7. Every detail lives in a sub-doc:
 
@@ -54,8 +54,8 @@ roadmap.
       `orders`, `order_status_events`, `generated_packs`, `qa_results`,
       `email_events`)
 - [ ] `requests` table exists, with `internal_note` and `updated_at`
-- [ ] Customer auth tables exist (`magic_links`, `customer_sessions`,
-      and any other tables shipped in `0004_customer_auth.sql`)
+- [ ] Customer auth tables exist (`customer_profiles`,
+      `customer_link_tokens`, `customer_auth_events`)
 - [ ] `deliveries` storage bucket exists and is **private**
 - [ ] Service role key works from server only
 - [ ] Storage upload + signed-download path verified
@@ -77,8 +77,9 @@ node scripts/probe-production-supabase.mjs
       `PAYMENT.CAPTURE.REVERSED`
 - [ ] Sandbox approval/capture full dry-run done
 - [ ] Optional small live amount (e.g. $1) test done if currency / region allows
-- [ ] Only `tier_2` and `tier_3` are accepted by `/api/paypal/create-order`
-- [ ] `tier_1` returns `tier_1_checkout_disabled` from
+- [ ] `tier_1`, `tier_2`, and `tier_3` are accepted by
+      `/api/paypal/create-order`
+- [ ] `tier_0` and `tier_4` return `unsupported_tier` from
       `app/app/api/paypal/create-order/route.ts`
 - [ ] Webhook is idempotent and never double-generates
 - [ ] Manual invoice fallback documented in `docs/43`
@@ -101,7 +102,7 @@ node scripts/test-email-production.mjs
 
 ## 6 · Generation / delivery checklist
 
-- [ ] Generation runs only after confirmed payment for `tier_2`/`tier_3`
+- [ ] Generation runs only after confirmed payment for `tier_1`/`tier_2`/`tier_3`
 - [ ] Generated pack is uploaded to the `deliveries` bucket
 - [ ] `generated_packs` row created with the storage path
 - [ ] QA pass runs against the generated docs
@@ -115,6 +116,16 @@ E2E dry-run (safe, marks manual-only steps explicitly):
 ```sh
 node scripts/qa-production-e2e-dry-run.mjs
 ```
+
+Live gate report:
+
+```sh
+node scripts/qa-live-delivery-gates.mjs
+```
+
+This script is read-only. It checks the live alias, unsigned webhook guard,
+current customer-auth tables, recent email status, recent order state, and
+whether a delivered order has a ZIP in private storage.
 
 ## 7 · Dashboard / download checklist
 
@@ -192,12 +203,14 @@ P7 gates pass. The launch is NO-GO if any critical gate fails.
 3. Run `node scripts/probe-production-supabase.mjs` against the
    production project. Expect `PROBE_RESULT: GO`.
 4. Run `node scripts/qa-production-readiness.mjs` against the live URL.
-5. Ship a sandbox capture end-to-end. Confirm pack delivered + email
+5. Run `node scripts/qa-live-delivery-gates.mjs`; it may remain BLOCKED
+   until email and a true paid capture are verified.
+6. Ship a sandbox capture end-to-end. Confirm pack delivered + email
    sent.
-6. Switch PayPal env to live, set live keys + webhook.
-7. Make a small live test purchase if region allows.
-8. Subscribe uptime check on `/api/health`.
-9. Announce launch.
+7. Switch PayPal env to live, set live keys + webhook.
+8. Make a small live test purchase if region allows.
+9. Subscribe uptime check on `/api/health`.
+10. Announce launch.
 
 ## 14 · Final outputs
 

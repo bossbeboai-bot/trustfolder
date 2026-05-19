@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, '..', '.playwright-mcp');
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'https://trustfolder.vercel.app';
 
 const pages = [
   ['home', '/'],

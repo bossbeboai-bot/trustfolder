@@ -27,7 +27,7 @@ const PAGES = [
 ];
 
 const VIEWPORT = { width: 1440, height: 900 };
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'https://trustfolder.vercel.app';
 
 await mkdir(OUT, { recursive: true });
 

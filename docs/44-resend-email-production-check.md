@@ -2,7 +2,7 @@
 
 Status: Phase 7 reference  
 Pairs with: `scripts/test-email-production.mjs`  
-Last updated: 2026-05-11
+Last updated: 2026-05-19
 
 ## 1 · Sending domain
 
@@ -28,7 +28,7 @@ production-or-equivalent settings:
 
 - Magic link email (customer login)
 - Request received (after `/request`)
-- Payment confirmed (after `tier_2` / `tier_3` capture)
+- Payment confirmed (after `tier_1` / `tier_2` / `tier_3` capture)
 - Pack preparing (during generation)
 - Pack delivered (with dashboard link)
 - Payment failed / refunded notification
@@ -57,6 +57,35 @@ The script:
   `--to` (or falls back to `ADMIN_EMAIL`)
 - Never prints `RESEND_API_KEY` or any other secret
 - Logs `EMAIL_TEST_RESULT: GO` / `BLOCKED`
+- On failure, prints the non-secret Resend error message, for example
+  `API key is invalid`.
+
+## 3.1 · Current production blocker
+
+As of 2026-05-19, production email delivery is blocked by Resend returning
+`401` with `API key is invalid`.
+
+Observed evidence:
+
+- Direct script probe failed:
+
+```sh
+node scripts/test-email-production.mjs --to aaron.miller198@protonmail.com
+```
+
+- Live `/api/request` created an `email_events` row but moved it to
+  `failed` with `error_message = API key is invalid`.
+
+Next action:
+
+1. Replace `RESEND_API_KEY` in Vercel Production with a valid key.
+2. Replace local `engine/.env` with the same approved key for operator
+   probes.
+3. Confirm `RESEND_FROM_EMAIL` is verified in Resend.
+4. Redeploy production if Vercel requires it for the env update.
+5. Rerun the test script and one live request.
+6. Accept email only after `email_events.status = sent` and a real
+   `resend_message_id` exists.
 
 ## 4 · Hard rules
 

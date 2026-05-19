@@ -5,7 +5,7 @@ Pairs with: `app/app/api/paypal/create-order/route.ts`,
 `app/app/api/paypal/capture/route.ts`,
 `app/app/api/paypal/webhook/route.ts`,
 `scripts/check-paypal-env.ps1`  
-Last updated: 2026-05-11
+Last updated: 2026-05-19
 
 PayPal is the main and only payment provider for TrustFolder. Do not
 add a second provider in this phase.
@@ -37,17 +37,17 @@ Before flipping to live:
 
 1. Configure sandbox env (`PAYPAL_ENV=sandbox`, sandbox keys, sandbox
    webhook).
-2. Run a complete `tier_2` checkout in sandbox:
+2. Run a complete `tier_1` checkout in sandbox:
    - free check → fit confirmed → create-order → approve → capture
      → generation → delivery → dashboard download
-3. Run the same for `tier_3`.
+3. Run the same for `tier_2` and `tier_3`.
 
 The dry-run is mandatory. NO-GO if it has not been completed.
 
 ## 4 · Live small-amount test
 
 If your region/currency supports a low-value live transaction (e.g. $1
-on a test SKU temporarily set up under tier_2), run it through end-to-end
+on a test SKU temporarily set up under tier_1), run it through end-to-end
 once you switch to live keys, then refund it.
 
 If the region does not support this (e.g. INR home currency with a $499
@@ -58,11 +58,10 @@ billing currency), skip and note "manual sandbox-only verification" in
 
 `app/app/api/paypal/create-order/route.ts` enforces:
 
-- `tier_1` → returns `tier_1_checkout_disabled`. Snapshot stays
-  request-only.
-- Any tier other than `tier_2` / `tier_3` → returns `unsupported_tier`.
-- `tier_2` and `tier_3` create the PayPal order and return an approve
+- `tier_1`, `tier_2`, and `tier_3` create the PayPal order and return an approve
   URL.
+- `tier_0` is free and never goes through PayPal.
+- `tier_4` and any unknown tier return `unsupported_tier`.
 
 The new compliance-readiness modules (Phase 6) do not have a tier and
 do not hit `/api/paypal/create-order`. They route to `/request`.

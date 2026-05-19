@@ -1,8 +1,8 @@
 # 36 — PayPal Main Provider
 
-Status: Batch 2 — **code-complete and partially verified. Full sandbox buyer approval/capture skipped by user decision.**
+Status: Current production reference as of 2026-05-19 - **code-complete and partially verified. Full real buyer approval/capture still pending.**
 
-PayPal is the selected main payment provider. Supported checkout tiers are tier_2 and tier_3. Tier_1, Enterprise, and Agency remain request/manual only. Create-order and routing are verified. Full sandbox buyer approval/capture was skipped, so live payment launch still requires one manual sandbox approval/capture test before accepting real payments.
+PayPal is the selected main payment provider. Supported automated checkout tiers are tier_1, tier_2, and tier_3. Enterprise/premium and agency work remain request/manual only. Create-order and routing are verified. PayPal webhook simulator delivery has reached production, but a true buyer approval/capture-to-delivery run is still required before treating payments as fully proven.
 
 PayPal is the primary payment provider for TrustFolder Batch 2. Manual PayPal invoice or payment link remains the fallback for tiers that are not safe for instant checkout yet.
 
@@ -26,7 +26,7 @@ If a PayPal sandbox buyer fails because of currency or sandbox-account limitatio
 
 | Tier | Price | Batch 2 payment rule | CTA |
 |---|---:|---|---|
-| AI Website Trust Snapshot | $99 | Request-only. No PayPal checkout until snapshot generation exists. | Request snapshot |
+| Lite Readiness Snapshot | $99 | PayPal checkout enabled after free fit check. | Start secure checkout |
 | AI Disclosure Pack | $499 | PayPal checkout enabled after free fit check. | Start secure checkout |
 | Buyer-Ready AI Governance Folder | $999 | PayPal checkout enabled after free fit check. | Start secure checkout |
 | Enterprise Buyer Handoff | $2,500+ | Application/manual invoice only. | Apply |
@@ -53,7 +53,7 @@ If a PayPal sandbox buyer fails because of currency or sandbox-account limitatio
 ## Safety rules
 
 - Do not generate before confirmed payment.
-- Do not route snapshot, enterprise, or agency tiers through instant checkout.
+- Do not route enterprise, premium, agency, or request-led module tiers through instant checkout.
 - Do not start subscriptions in Batch 2.
 - Do not create duplicate generation runs from webhook replay, return-page retry, or manual capture retry.
 - Treat webhook/capture replay as no-op once the order has moved past `payment_pending`.
@@ -64,8 +64,8 @@ If a PayPal sandbox buyer fails because of currency or sandbox-account limitatio
 
 ## Current implementation notes
 
-- Supported checkout tiers are gated in `app/app/api/paypal/create-order/route.ts` as `tier_2` and `tier_3` only.
-- `tier_1` returns `tier_1_checkout_disabled` and remains request-only.
+- Supported checkout tiers are gated in `app/app/api/paypal/create-order/route.ts` as `tier_1`, `tier_2`, and `tier_3`.
+- `tier_0`, `tier_4`, and unknown tiers return `unsupported_tier`.
 - `engine/src/order-status.ts` uses optimistic concurrency when `expected_from` is supplied, preventing two callers from acquiring the same transition.
 - `engine/src/pipeline.ts` no-ops if a non-retry call reaches an order that is already preparing, packaged, delivered, failed, or refunded.
 - `/checkout/return`, `/api/paypal/capture`, and `/api/paypal/webhook` only send confirmation and call `runPipeline` when they acquire `payment_pending → payment_completed`.
@@ -99,7 +99,7 @@ Non-manual checks run this batch (all PASS):
 - `cd app && npx tsc --noEmit` → clean
 - `cd app && npm run build` → build passes
 - Forbidden phrase grep across `app/app`, `app/lib`, `engine/src`, Batch 2 docs → 0 hits
-- Unsupported-tier guard → `tier_1` returns `400 tier_1_checkout_disabled`, other tiers return `400 unsupported_tier` (code inspection at `app/app/api/paypal/create-order/route.ts`).
+- Unsupported-tier guard -> `tier_0`, `tier_4`, and unknown tiers return `400 unsupported_tier` (code inspection at `app/app/api/paypal/create-order/route.ts`).
 - Capture/webhook idempotency logic present by code inspection (`app/app/api/paypal/capture/route.ts`, `app/app/api/paypal/webhook/route.ts`, `engine/src/order-status.ts`, `engine/src/pipeline.ts`).
 - Refund/reversal handling present by code inspection (`app/app/api/paypal/webhook/route.ts` — `PAYMENT.CAPTURE.REFUNDED` and `PAYMENT.CAPTURE.REVERSED` branches, plus dashboard status copy in `app/app/dashboard/orders/page.tsx`).
 - Dashboard status copy present by code inspection (`engine/src/order-status.ts`, `app/app/dashboard/primitives.tsx`, `app/app/success/[orderId]/page.tsx`, `app/app/checkout/cancel/page.tsx`).

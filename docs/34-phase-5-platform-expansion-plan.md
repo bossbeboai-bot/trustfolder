@@ -148,7 +148,7 @@ create index customer_auth_events_email_idx on customer_auth_events (email, crea
 ```
 
 Sessions are **stateless** — HMAC-signed cookie (mirrors `admin-auth.ts`
-pattern). No `customer_sessions` table needed in v1. If we ever need
+pattern). No separate customer session table is needed in v1. If we ever need
 server-side revocation we add that table later.
 
 ### 3.2 Foreign keys (Batch 1)

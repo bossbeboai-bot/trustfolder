@@ -1,13 +1,14 @@
 /**
  * Phase 6 request package-interest smoke.
  *
- * Runs against http://localhost:3000 and verifies that every new Phase 6
+ * Runs against the live alias by default and verifies that every new Phase 6
  * module type renders on /request with the matching package selected.
+ * Set BASE_URL=http://localhost:3000 to target a local server.
  */
 
 import { chromium } from 'playwright';
 
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'https://trustfolder.vercel.app';
 
 const CASES = [
   ['soc2-readiness', 'SOC 2 Readiness Evidence Pack'],

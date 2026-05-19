@@ -1,12 +1,12 @@
 import { chromium } from 'playwright';
 
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'https://trustfolder.vercel.app';
 const CASES = [
-  ['/', 'Compliance-readiness modules for AI teams.'],
-  ['/pricing', 'Request-only modules. No checkout yet.'],
+  ['/', "Enterprise buyers don't pause deals over AI features."],
+  ['/pricing', 'Choose the buyer-review evidence level after the free check'],
   ['/request?type=soc2-readiness', 'SOC 2 Readiness Evidence Pack'],
-  ['/safety', 'Readiness packs, expert-review handoffs, and intake-only routing.'],
-  ['/examples', 'Compliance-readiness module examples'],
+  ['/safety', 'Safe by default. Clear when expert review is needed.'],
+  ['/examples', 'Sample AI governance documents and buyer-review packet'],
 ];
 
 let ok = true;

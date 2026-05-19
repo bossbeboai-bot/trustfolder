@@ -22,7 +22,7 @@ const PAGES = [
 ];
 
 const VIEWPORT = { width: 390, height: 844 }; // iPhone 14
-const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+const BASE = process.env.BASE_URL ?? 'https://trustfolder.vercel.app';
 
 await mkdir(OUT, { recursive: true });
 
